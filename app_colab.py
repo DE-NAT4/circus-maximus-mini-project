@@ -34,6 +34,7 @@ def print_order_menu():
     print("| \t\t\t\t|")
     print("--------------------------------")
 
+# this is a comment
 while True:
     print_main_menu()
     user_input = input("Enter option: ")
