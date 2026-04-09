@@ -1,9 +1,12 @@
 products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
 
+
+
 def print_main_menu():
     print(" ------ Main Menu ------")
     print("|\t\t\t|")
     print("| 1. Products Menu\t|")
+    print("| 2. Order menu \t|")
     print("| 0. Exit\t\t|")
     print("|\t\t\t|")
     print("------------------------")
@@ -18,6 +21,18 @@ def print_product_menu():
     print("| 0. Main Menu\t\t|")
     print("|\t\t\t|")
     print("------------------------")
+
+def print_order_menu():
+    print("\n ---------- Order Menu ---------")
+    print("|\t\t\t\t|")
+    print("| 1. Print Order Dictionary\t|")
+    print("| 2. Add Order to Dictionary\t|")
+    print("| 3. Update an Order's Status\t|")
+    print("| 4. Update an Order's Details\t|")
+    print("| 5. Delete an Order\t\t|")
+    print("| 0. Exit to Main Menu\t\t|")
+    print("| \t\t\t\t|")
+    print("--------------------------------")
 
 while True:
     print_main_menu()
@@ -74,6 +89,35 @@ while True:
 
             else:
                 print("invalid input")
+
+    elif user_input == "2":
+        while True:
+            print_order_menu()
+            order_menu_choice = input("Please select an option ")
+
+            if order_menu_choice == "0":
+                break
+
+            elif order_menu_choice == "1":
+                pass 
+
+            elif order_menu_choice == "2":
+                pass
+
+            elif order_menu_choice == "3":
+                pass
+
+            elif order_menu_choice == "4":
+                pass
+
+            elif order_menu_choice == "5":
+                pass
+
+            else:
+                print ("Invalid input")
+
+
+
 
 
     else:
