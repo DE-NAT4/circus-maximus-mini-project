@@ -1,6 +1,11 @@
 products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
 
-
+order_list = [{
+    "Customer Name": "John",
+    "Customer Address":"Bradford",
+    "Customer Phone":"071111111",
+    "Order Status": "Pending"
+    }]
 
 def print_main_menu():
     print(" ------ Main Menu ------")
@@ -35,6 +40,10 @@ def print_order_menu():
     print("--------------------------------")
 # this is A test 
 # this is a comment
+def print_order_list():
+    for order in enumerate(order_list):
+        print (order)
+
 while True:
     print_main_menu()
     user_input = input("Enter option: ")
@@ -103,8 +112,21 @@ while True:
                 pass 
 
             elif order_menu_choice == "2":
-                pass
+                print_order_list()
+                new_customer_name = input("What is the new customers name? ")
+                new_customer_address = input("What is the address of the customer? ")
+                new_customer_pnumber = input("What is the phone number of the customer? ")
 
+                order_list.append({
+                "Customer Name": new_customer_name ,
+                "Customer Address" : new_customer_address ,
+                "Customer Phone Number" : new_customer_pnumber ,
+                "Order Status" : "Pending"
+                })
+                print("Order added to list")
+                
+                print_order_list()
+   
             elif order_menu_choice == "3":
                 pass
 
