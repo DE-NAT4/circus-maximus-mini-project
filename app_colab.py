@@ -1,5 +1,6 @@
-products_list = ["Mocha", "Americano", "Cappuccino", "Latte", "Tea"]
-statuses = ['Order received', 'preparing', 'On the way', 'delivered']
+products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+Statuses = ['Order Received', 'Preparing', 'On the way', 'Delivered']
+
 
 
 def print_main_menu():
@@ -34,10 +35,20 @@ def print_order_menu():
     print("| \t\t\t\t|")
     print("--------------------------------")
 
-    
+
+order_list = [{
+    "Customer Name": "John",
+    "Customer Address":"Bradford",
+    "Customer Phone":"071111111",
+    "Order Status": "Pending"
+    }]
 
 # this is a test k
 # this is a comment
+def print_order_list():
+    for order in enumerate(order_list):
+        print (order)
+
 while True:
     print_main_menu()
     user_input = input("Enter option: ")
@@ -106,12 +117,25 @@ while True:
                 pass 
 
             elif order_menu_choice == "2":
-                pass
+                print_order_list()
+                new_customer_name = input("What is the new customers name? ")
+                new_customer_address = input("What is the address of the customer? ")
+                new_customer_pnumber = input("What is the phone number of the customer? ")
 
+                order_list.append({
+                "Customer Name": new_customer_name ,
+                "Customer Address" : new_customer_address ,
+                "Customer Phone Number" : new_customer_pnumber ,
+                "Order Status" : "Pending"
+                })
+                print("Order added to list")
+                
+                print_order_list()
+   
             elif order_menu_choice == "3":
                 while True:
                 
-                    for i, status in enumerate(statuses):
+                    for i, status in enumerate(Statuses):
                        print(f"{i}: {status}")
                        orders = {'name': input("Enter customer name ") ,
            'Address': input("Enter Customer Address ") ,
