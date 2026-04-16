@@ -1,5 +1,5 @@
-products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
-
+products_list = ["Mocha", "Americano", "Cappuccino", "Latte", "Tea"]
+statuses = ['Order received', 'preparing', 'On the way', 'delivered']
 
 
 def print_main_menu():
@@ -33,6 +33,9 @@ def print_order_menu():
     print("| 0. Exit to Main Menu\t\t|")
     print("| \t\t\t\t|")
     print("--------------------------------")
+
+    
+
 # this is a test k
 # this is a comment
 while True:
@@ -106,7 +109,32 @@ while True:
                 pass
 
             elif order_menu_choice == "3":
-                pass
+                while True:
+                
+                    for i, status in enumerate(statuses):
+                       print(f"{i}: {status}")
+                       orders = {'name': input("Enter customer name ") ,
+           'Address': input("Enter Customer Address ") ,
+           'Telephone': input("Enter Customer Telephone Number ") ,
+           'Order Status': input("Enter index of desired Order Status ")
+           }   
+               
+                    try:
+                         order_index = int(input("Enter the order index to update: "))
+                         if 0 <= order_index < len(orders):
+                            status_index = int(input("Enter the status index: "))
+                            if 0 <= status_index < len(statuses):
+                              orders[order_index]['Order Status'] = statuses[status_index]
+                              print(f"Order status updated successfully for {orders[order_index]['name']}")
+                            else:
+                               print("Invalid status index.")
+                         else:
+                           print("Invalid order index.")
+                    except ValueError:
+                      print("Please enter a valid number.")
+
+                    break  
+                            
 
             elif order_menu_choice == "4":
                 pass
