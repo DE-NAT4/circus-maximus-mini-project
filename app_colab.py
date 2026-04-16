@@ -1,4 +1,6 @@
 products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+Statuses = ['Order Received', 'Preparing', 'On the way', 'Delivered']
+
 
 order_list = [{
     "Customer Name": "John",
@@ -42,7 +44,16 @@ def print_order_menu():
     print("| 0. Exit to Main Menu\t\t|")
     print("| \t\t\t\t|")
     print("--------------------------------")
-# this is A test 
+
+
+order_list = [{
+    "Customer Name": "John",
+    "Customer Address":"Bradford",
+    "Customer Phone":"071111111",
+    "Order Status": "Pending"
+    }]
+
+# this is a test k
 # this is a comment
 def print_order_list():
     for order in enumerate(order_list):
