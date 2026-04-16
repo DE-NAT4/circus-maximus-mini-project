@@ -1,5 +1,4 @@
 products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
-Statuses = ['Order Received', 'Preparing', 'On the way', 'Delivered']
 
 
 order_list = [{
@@ -9,7 +8,7 @@ order_list = [{
     "Order Status": "Pending"
     }]
     
-statuses = ['order received', 'preparing', 'On the way', 'delivered']
+Statuses = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
 
 
 
@@ -143,34 +142,25 @@ while True:
                 print_order_list()
    
             elif order_menu_choice == "3":
-                while True:
-                
-                    for i, status in enumerate(statuses):
-                       print(f"{i}: {status}")
-                       orders = {
-                                    'name': input("Enter customer name ") ,
-                                    'Address': input("Enter Customer Address ") ,
-                                    'Telephone': input("Enter Customer Telephone Number ") ,
-                                    'Order Status': input("Enter index of desired Order Status ")
-                                }   
-               
-                    try:
-                         order_index = int(input("Enter the order index to update: "))
-                         if 0 <= order_index < len(orders):
-                            status_index = int(input("Enter the status index: "))
-                            if 0 <= status_index < len(statuses):
-                              orders[order_index]['Order Status'] = statuses[status_index]
-                              print(f"Order status updated successfully for {orders[order_index]['name']}")
-                            else:
-                               print("Invalid status index.")
-                         else:
-                           print("Invalid order index.")
-                    except ValueError:
-                      print("Please enter a valid number.")
+                for index, order in enumerate(order_list):
+                    print(index, order)
 
-                    break  
-                
-                 
+                try:
+                    order_index = int(input("Enter the order index to update: "))
+                    if 0 <= order_index < len(order_list):
+                        for i, status in enumerate(Statuses):
+                            print(f"{i}: {status}")
+
+                        status_index = int(input("Enter the status index: "))
+                        if 0 <= status_index < len(Statuses):
+                            order_list[order_index]["Order Status"] = Statuses[status_index]
+                            print("Order status updated successfully.")
+                        else:
+                            print("Invalid status index.")
+                    else:
+                        print("Invalid order index.")
+                except ValueError:
+                    print("Please enter a valid number.")
 
             elif order_menu_choice == "4":
                 
