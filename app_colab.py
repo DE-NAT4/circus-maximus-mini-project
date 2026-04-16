@@ -6,6 +6,10 @@ order_list = [{
     "Customer Phone":"071111111",
     "Order Status": "Pending"
     }]
+    
+statuses = ['order received', 'preparing', 'On the way', 'delivered']
+
+
 
 def print_main_menu():
     print(" ------ Main Menu ------")
@@ -109,7 +113,7 @@ while True:
                 break
 
             elif order_menu_choice == "1":
-                pass 
+                print_order_list()
 
             elif order_menu_choice == "2":
                 print_order_list()
@@ -128,13 +132,83 @@ while True:
                 print_order_list()
    
             elif order_menu_choice == "3":
-                pass
+                while True:
+                
+                    for i, status in enumerate(statuses):
+                       print(f"{i}: {status}")
+                       orders = {
+                                    'name': input("Enter customer name ") ,
+                                    'Address': input("Enter Customer Address ") ,
+                                    'Telephone': input("Enter Customer Telephone Number ") ,
+                                    'Order Status': input("Enter index of desired Order Status ")
+                                }   
+               
+                    try:
+                         order_index = int(input("Enter the order index to update: "))
+                         if 0 <= order_index < len(orders):
+                            status_index = int(input("Enter the status index: "))
+                            if 0 <= status_index < len(statuses):
+                              orders[order_index]['Order Status'] = statuses[status_index]
+                              print(f"Order status updated successfully for {orders[order_index]['name']}")
+                            else:
+                               print("Invalid status index.")
+                         else:
+                           print("Invalid order index.")
+                    except ValueError:
+                      print("Please enter a valid number.")
+
+                    break  
+                
+                 
 
             elif order_menu_choice == "4":
-                pass
+                
+                print_order_list()
+
+                try:
+                    index = int(input("Select order index: "))
+                    order = order_list[index]
+
+                    for key in order:
+                        new_value = input(f"Update {key} (leave blank to keep '{order[key]}'): ")
+
+                        if new_value != "":
+                                order[key] = new_value
+
+                    print("Order updated.")
+
+                except (IndexError, ValueError):
+                    print("Invalid input.")
 
             elif order_menu_choice == "5":
-                pass
+                # Delete order functionality for option 5: Prints the order list with indexes - Gets input for the index and deletes that order using the index
+                # Delete order
+                for index, order in enumerate(order_list):
+                    print(index, order)
+    
+                try:
+                    index = int(input("Select order index to delete: "))
+                    if 0 <= index < len(order_list):
+                        order_list.pop(index)
+                        print("Order deleted!")
+                    else:
+                        print("Invalid index")
+                except:
+                    print("Invalid input")
+
+        # else:
+        #     print("Invalid option")
+                # print_order_list()
+                # try:
+                #     index = int(input("Please enter the index of the order to be deleted:"))
+                #     order_list.pop(index)
+
+                #     print("list after deleting an order")
+                #     print_order_list()
+
+                # except(IndexError, ValueError):
+                #     print("Invalid input.")
+            
 
             else:
                 print ("Invalid input")
