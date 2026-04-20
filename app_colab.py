@@ -67,9 +67,9 @@ order_list = [{
     }]
 
 # This function will print the courier menu (NEEDS TO BE LINKED TO THE TXT FILE)
-# def print_courier_list():
-#     for courier in enumerate(courier_list):
-#         print (courier)
+def print_courier_list():
+    for courier in enumerate(courier_list):
+        print (courier)
     
 #This function prints the order list dictionaries with their index
 def print_order_list():
@@ -142,17 +142,43 @@ while True:
                 break
 
             if courier_choice == "1":
-                #print_courier_list()
+                print_courier_list()
                 pass
 
             if courier_choice == "2":
+                new_courier = input("Enter the name of courier: ")
+                courier_list.append(new_courier)
+                print ("New Courier Added")
+                print_courier_list()
                 pass
 
             if courier_choice == "3":
-                pass
+                while True:
+                    print_courier_list()
+                    index = int(input("Enter index to update: "))
+                    if 0 <= index <= len(courier_list):
+                        new_name = input("Enter a new name: ")
+                        courier_list[index] = new_name
+                        print ("Updated Sucessfully")
+                        print_courier_list()
+                        break
+                    else:
+                        print ("Invalid Input")
+
+                
 
             if courier_choice == "4":
-                pass
+                while True:
+                    print_courier_list()
+                    index = int(input("Enter index to delete: "))
+                    if 0 <= index <+ len(courier_list):
+                        courier_list.pop(index)
+                        print("Courier Deleted")
+                        print_courier_list()
+                        break
+                    else:
+                        print("Invalid Input")
+
 
     elif user_input == "3":
         while True:
