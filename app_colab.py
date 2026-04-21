@@ -1,4 +1,4 @@
-        
+        #Testing branch is working
 def load_products():
     """Load products from Products.txt file"""
     products = []
@@ -170,43 +170,70 @@ while True:
 
             if courier_choice == "1":
                 print_courier_list()
-                pass
+                
 
             if courier_choice == "2":
-                new_courier = input("Enter the name of courier: ")
-                courier_list.append(new_courier)
-                print ("New Courier Added")
-                print_courier_list()
-                pass
+                try:
+                    new_courier = input("Enter the name of courier: ")
+                    if new_courier in courier_list:
+                        print("Courier already exists")
+
+                    else:
+                        courier_list.append(new_courier)
+                        print ("New Courier Added")
+                        print_courier_list()
+                except:
+                    print("Invalid Input")
+                
 
             if courier_choice == "3":
                 while True:
-                    print_courier_list()
-                    index = int(input("Enter index to update: "))
-                    if 0 <= index <= len(courier_list):
-                        new_name = input("Enter a new name: ")
-                        courier_list[index] = new_name
-                        print ("Updated Sucessfully")
-                        print_courier_list()
+                    if len(courier_list) == 0:
+                        print("WARNING - Courier list is empty returning back to menu")
                         break
+                    
                     else:
-                        print ("Invalid Input")
+                        print_courier_list()
+                        try:
+                            index = int(input("Enter index to update: "))
+                            if 0 <= index <= len(courier_list):
+                                new_name = input("Enter a new name: ")
+                                if new_name in courier_list:
+                                    print ("Courier already exists")
+
+                                else:
+                                    courier_list[index] = new_name
+                                    print ("Updated Sucessfully")
+                                    print_courier_list()
+                                    break
+                        except:
+                            print ("Invalid Input")
+                        else:
+                            print ("Invalid Input")
 
                 
 
             if courier_choice == "4":
                 while True:
-                    print_courier_list()
-                    index = int(input("Enter index to delete: "))
-                    if 0 <= index <+ len(courier_list):
-                        courier_list.pop(index)
-                        print("Courier Deleted")
-                        print_courier_list()
+                    if len(courier_list) == 0:
+                        print("WARNING - Courier list is empty returning back to menu")
                         break
+
                     else:
-                        print("Invalid Input")
-
-
+                        print_courier_list()
+                        try:
+                            index = int(input("Enter index to delete: "))
+                            if 0 <= index <+ len(courier_list):
+                                courier_list.pop(index)
+                                print("Courier Deleted")
+                                print_courier_list()
+                                break
+                            else:
+                                print("Invalid Input")
+                        except:
+                            print ("Invalid Input")
+            else: 
+                print ("Invalid Input")
     elif user_input == "3":
         while True:
             print_order_menu()
@@ -291,9 +318,9 @@ while True:
                     print("Invalid input")
 
             else:
-                print ("Invalid input")
+                print ("Invalid input ")
 
     else:
-        print("Invalid input")
+        print("Invalid input ")
 
         
