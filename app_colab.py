@@ -20,6 +20,57 @@ def save_products(products):
     except Exception as e:
         print(f"Error saving products: {e}")
 
+def products_menu():
+    while True:
+            print_product_menu()
+            product_choice = input("Enter option: ")
+
+            if product_choice == "0":
+                break
+
+            elif product_choice == "1":
+                print(products_list)
+                
+            elif product_choice == "2":
+                new_product = input("Enter new product name: ")
+                products_list.append(new_product)
+                save_products(products_list)
+                print(products_list)
+                print("New product added")
+
+            elif product_choice == "3":
+                while True:
+                    for (index, product) in enumerate(products_list):
+                        print (index, product)
+                    update_select_index = int(input("Please select the index of what you want to update "))
+
+                    if   0 <= update_select_index < len(products_list):
+                    #if update_select_index in products_list:
+                        update_select_name = str(input("Please enter a new name "))
+                        if update_select_name in products_list:
+                            print ("This item already exists")
+                        else:
+                            products_list[update_select_index] = update_select_name
+                            save_products(products_list)
+                            print ("Product updated")
+                            print (products_list)
+                            break
+
+                    else: 
+                        print ("Invalid Index")
+
+            elif product_choice == "4":
+                print(f"Here are the current products: {products_list}")
+
+                index = int(input("Enter the index of the product to be deleted: "))
+                products_list.pop(index)
+                save_products(products_list)
+
+                print(f"Here is the new product list: {products_list}")
+
+            else:
+                print("invalid input")
+
 products_list = load_products()
 
 courier_list = []
@@ -107,55 +158,7 @@ while True:
         break
 
     elif user_input == "1":
-        while True:
-            print_product_menu()
-            product_choice = input("Enter option: ")
-
-            if product_choice == "0":
-                break
-
-            elif product_choice == "1":
-                print(products_list)
-                
-            elif product_choice == "2":
-                new_product = input("Enter new product name: ")
-                products_list.append(new_product)
-                save_products(products_list)
-                print(products_list)
-                print("New product added")
-
-            elif product_choice == "3":
-                while True:
-                    for (index, product) in enumerate(products_list):
-                        print (index, product)
-                    update_select_index = int(input("Please select the index of what you want to update "))
-
-                    if   0 <= update_select_index < len(products_list):
-                    #if update_select_index in products_list:
-                        update_select_name = str(input("Please enter a new name "))
-                        if update_select_name in products_list:
-                            print ("This item already exists")
-                        else:
-                            products_list[update_select_index] = update_select_name
-                            save_products(products_list)
-                            print ("Product updated")
-                            print (products_list)
-                            break
-
-                    else: 
-                        print ("Invalid Index")
-
-            elif product_choice == "4":
-                print(f"Here are the current products: {products_list}")
-
-                index = int(input("Enter the index of the product to be deleted: "))
-                products_list.pop(index)
-                save_products(products_list)
-
-                print(f"Here is the new product list: {products_list}")
-
-            else:
-                print("invalid input")
+        products_menu()
 
     elif user_input== "2":
         while True:
