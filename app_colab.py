@@ -170,14 +170,17 @@ while True:
                 
 
             if courier_choice == "2":
-                new_courier = input("Enter the name of courier: ")
-                if new_courier in courier_list:
-                    print("Courier already exists")
+                try:
+                    new_courier = input("Enter the name of courier: ")
+                    if new_courier in courier_list:
+                        print("Courier already exists")
 
-                else:
-                    courier_list.append(new_courier)
-                    print ("New Courier Added")
-                    print_courier_list()
+                    else:
+                        courier_list.append(new_courier)
+                        print ("New Courier Added")
+                        print_courier_list()
+                except:
+                    print("Invalid Input")
                 
 
             if courier_choice == "3":
@@ -188,17 +191,20 @@ while True:
                     
                     else:
                         print_courier_list()
-                        index = int(input("Enter index to update: "))
-                        if 0 <= index <= len(courier_list):
-                            new_name = input("Enter a new name: ")
-                            if new_name in courier_list:
-                                print ("Courier already exists")
+                        try:
+                            index = int(input("Enter index to update: "))
+                            if 0 <= index <= len(courier_list):
+                                new_name = input("Enter a new name: ")
+                                if new_name in courier_list:
+                                    print ("Courier already exists")
 
-                            else:
-                                courier_list[index] = new_name
-                                print ("Updated Sucessfully")
-                                print_courier_list()
-                                break
+                                else:
+                                    courier_list[index] = new_name
+                                    print ("Updated Sucessfully")
+                                    print_courier_list()
+                                    break
+                        except:
+                            print ("Invalid Input")
                         else:
                             print ("Invalid Input")
 
@@ -212,14 +218,17 @@ while True:
 
                     else:
                         print_courier_list()
-                        index = int(input("Enter index to delete: "))
-                        if 0 <= index <+ len(courier_list):
-                            courier_list.pop(index)
-                            print("Courier Deleted")
-                            print_courier_list()
-                            break
-                        else:
-                            print("Invalid Input")
+                        try:
+                            index = int(input("Enter index to delete: "))
+                            if 0 <= index <+ len(courier_list):
+                                courier_list.pop(index)
+                                print("Courier Deleted")
+                                print_courier_list()
+                                break
+                            else:
+                                print("Invalid Input")
+                        except:
+                            print ("Invalid Input")
             else: 
                 print ("Invalid Input")
     elif user_input == "3":
