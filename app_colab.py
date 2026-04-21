@@ -1,5 +1,26 @@
-        #Test comment for branch
-products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+        
+def load_products():
+    """Load products from Products.txt file"""
+    products = []
+    try:
+        with open('Products.txt', 'r') as file:
+            for product in file:
+                products.append(product.strip())
+    except FileNotFoundError:
+        print("Product not found. Using default products.")
+        products = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+    return products
+
+def save_products(products):
+    """Save products back to Products.txt file"""
+    try:
+        with open('Products.txt', 'w') as file:
+            for product in products:
+                file.write(product + '\n')
+    except Exception as e:
+        print(f"Error saving products: {e}")
+
+products_list = load_products()
 
 courier_list = []
 
@@ -99,6 +120,7 @@ while True:
             elif product_choice == "2":
                 new_product = input("Enter new product name: ")
                 products_list.append(new_product)
+                save_products(products_list)
                 print(products_list)
                 print("New product added")
 
@@ -115,6 +137,7 @@ while True:
                             print ("This item already exists")
                         else:
                             products_list[update_select_index] = update_select_name
+                            save_products(products_list)
                             print ("Product updated")
                             print (products_list)
                             break
@@ -127,6 +150,7 @@ while True:
 
                 index = int(input("Enter the index of the product to be deleted: "))
                 products_list.pop(index)
+                save_products(products_list)
 
                 print(f"Here is the new product list: {products_list}")
 
