@@ -1,5 +1,26 @@
         
-products_list = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+def load_products():
+    """Load products from Products.txt file"""
+    products = []
+    try:
+        with open('Products.txt', 'r') as file:
+            for product in file:
+                products.append(product.strip())
+    except FileNotFoundError:
+        print("Product not found. Using default products.")
+        products = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+    return products
+
+def save_products(products):
+    """Save products back to Products.txt file"""
+    try:
+        with open('Products.txt', 'w') as file:
+            for product in products:
+                file.write(product + '\n')
+    except Exception as e:
+        print(f"Error saving products: {e}")
+
+products_list = load_products()
 
 courier_list = []
 # checking branches
@@ -67,9 +88,9 @@ order_list = [{
     }]
 
 # This function will print the courier menu (NEEDS TO BE LINKED TO THE TXT FILE)
-# def print_courier_list():
-#     for courier in enumerate(courier_list):
-#         print (courier)
+def print_courier_list():
+    for courier in enumerate(courier_list):
+        print (courier)
     
 #This function prints the order list dictionaries with their index
 def print_order_list():
@@ -99,6 +120,7 @@ while True:
             elif product_choice == "2":
                 new_product = input("Enter new product name: ")
                 products_list.append(new_product)
+                save_products(products_list)
                 print(products_list)
                 print("New product added")
 
@@ -115,6 +137,7 @@ while True:
                             print ("This item already exists")
                         else:
                             products_list[update_select_index] = update_select_name
+                            save_products(products_list)
                             print ("Product updated")
                             print (products_list)
                             break
@@ -127,6 +150,7 @@ while True:
 
                 index = int(input("Enter the index of the product to be deleted: "))
                 products_list.pop(index)
+                save_products(products_list)
 
                 print(f"Here is the new product list: {products_list}")
 
@@ -142,17 +166,43 @@ while True:
                 break
 
             if courier_choice == "1":
-                #print_courier_list()
+                print_courier_list()
                 pass
 
             if courier_choice == "2":
+                new_courier = input("Enter the name of courier: ")
+                courier_list.append(new_courier)
+                print ("New Courier Added")
+                print_courier_list()
                 pass
 
             if courier_choice == "3":
-                pass
+                while True:
+                    print_courier_list()
+                    index = int(input("Enter index to update: "))
+                    if 0 <= index <= len(courier_list):
+                        new_name = input("Enter a new name: ")
+                        courier_list[index] = new_name
+                        print ("Updated Sucessfully")
+                        print_courier_list()
+                        break
+                    else:
+                        print ("Invalid Input")
+
+                
 
             if courier_choice == "4":
-                pass
+                while True:
+                    print_courier_list()
+                    index = int(input("Enter index to delete: "))
+                    if 0 <= index <+ len(courier_list):
+                        courier_list.pop(index)
+                        print("Courier Deleted")
+                        print_courier_list()
+                        break
+                    else:
+                        print("Invalid Input")
+
 
     elif user_input == "3":
         while True:
