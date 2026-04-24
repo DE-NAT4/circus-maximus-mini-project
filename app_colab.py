@@ -1,6 +1,6 @@
-        #Testing branch is working
+
 def load_products():
-    """Load products from Products.txt file"""
+    #Load products from Products.txt file
     products = []
     try:
         with open('Products.txt', 'r') as file:
@@ -12,7 +12,7 @@ def load_products():
     return products
 
 def save_products(products):
-    """Save products back to Products.txt file"""
+    #Save products back to Products.txt file
     try:
         with open('Products.txt', 'w') as file:
             for product in products:
@@ -34,7 +34,6 @@ def products_menu():
             elif product_choice == "2":
                 new_product = input("Enter new product name: ")
                 products_list.append(new_product)
-                save_products(products_list)
                 print(products_list)
                 print("New product added")
 
@@ -51,7 +50,6 @@ def products_menu():
                             print ("This item already exists")
                         else:
                             products_list[update_select_index] = update_select_name
-                            save_products(products_list)
                             print ("Product updated")
                             print (products_list)
                             break
@@ -64,7 +62,6 @@ def products_menu():
 
                 index = int(input("Enter the index of the product to be deleted: "))
                 products_list.pop(index)
-                save_products(products_list)
 
                 print(f"Here is the new product list: {products_list}")
 
@@ -74,7 +71,7 @@ def products_menu():
 products_list = load_products()
 
 courier_list = []
-# checking branches
+
 order_list = [{
     "Customer Name": "John",
     "Customer Address":"Bradford",
@@ -138,7 +135,7 @@ order_list = [{
     "Order Status": "Pending"
     }]
 
-# This function will print the courier menu (NEEDS TO BE LINKED TO THE TXT FILE)
+# This function will print the courier menu
 def print_courier_list():
     for courier in enumerate(courier_list):
         print (courier)
@@ -154,9 +151,21 @@ while True:
     user_input = input("Enter option: ")
 
     if user_input == "0":
-        print("Exiting app...")
-        break
+        saveconf = input("Do you want to save your changes y/n: ")
+        if saveconf == "y":
+            save_products(products_list)
+            print("Saving and Exiting app...")
+            exit()
+            break
 
+        elif saveconf == "n":
+            print("Exiting app...")
+            exit()
+            break
+        
+        else:  
+            print ("Invalid Input")
+    
     elif user_input == "1":
         products_menu()
 
