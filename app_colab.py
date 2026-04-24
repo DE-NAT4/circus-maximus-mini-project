@@ -20,6 +20,27 @@ def save_products(products):
     except Exception as e:
         print(f"Error saving products: {e}")
 
+def load_couriers():
+    """Load couriers from couriers.txt file"""
+    couriers = []
+    try:
+        with open('couriers.txt', 'r') as file:
+            for courier in file:
+                couriers.append(courier.strip())
+    except FileNotFoundError:
+        print("Courier not found. Using default couriers.")
+        couriers = ["courier1", "courier2", "courier3"]
+    return couriers
+ 
+def save_couriers(couriers):
+    """Save couriers back to couriers.txt file"""
+    try:
+        with open('couriers.txt', 'w') as file:
+            for courier in couriers:
+                file.write(courier + '\n')
+    except Exception as e:
+        print(f"Error saving couriers: {e}")
+
 def products_menu():
     while True:
             print_product_menu()
@@ -72,7 +93,7 @@ def products_menu():
 
 products_list = load_products()
 
-courier_list = []
+courier_list = load_couriers()
 # checking branches
 
 
@@ -136,6 +157,7 @@ while True:
         saveconf = input("Do you want to save your changes y/n: ")
         if saveconf == "y":
             save_products(products_list)
+            save_couriers(courier_list)
             print("Saving and Exiting app...")
             exit()
             break
