@@ -1,6 +1,80 @@
 import orders 
 import products
 
+def courier_menu():
+    while True:
+        print_courier_menu()
+        courier_choice = input("Enter Option: ")
+
+        if courier_choice == "0":
+            break
+
+        elif courier_choice == "1":
+            print_courier_list()
+            
+
+        elif courier_choice == "2":
+            try:
+                new_courier = input("Enter the name of courier: ")
+                if new_courier in courier_list:
+                    print("Courier already exists")
+
+                else:
+                    courier_list.append(new_courier)
+                    print ("New Courier Added")
+                    print_courier_list()
+            except:
+                print("Invalid Input")
+            
+
+        elif courier_choice == "3":
+            while True:
+                if len(courier_list) == 0:
+                    print("WARNING - Courier list is empty returning back to menu")
+                    break
+                
+                else:
+                    #print_courier_list()
+                    try:
+                        index = int(input("Enter index to update: "))
+                        if 0 <= index <= len(courier_list):
+                            new_name = input("Enter a new name: ")
+                            if new_name in courier_list:
+                                print ("Courier already exists")
+
+                            else:
+                                courier_list[index] = new_name
+                                print ("Updated Sucessfully")
+                                #print_courier_list()
+                                break
+                    except:
+                        print ("Invalid Input")
+                    else:
+                        print ("Invalid Input")
+
+                
+
+        elif courier_choice == "4":
+            while True:
+                if len(courier_list) == 0:
+                    print("WARNING - Courier list is empty returning back to menu")
+                    break
+
+                else:
+                    print_courier_list()
+                    try:
+                        index = int(input("Enter index to delete: "))
+                        if 0 <= index <+ len(courier_list):
+                            courier_list.pop(index)
+                            print("Courier Deleted")
+                            print_courier_list()
+                            break
+                        else:
+                            print("Invalid Input")
+                    except:
+                        print ("Invalid Input")
+        else: 
+            print ("Invalid Input")
 
 
 def load_couriers():
@@ -99,79 +173,8 @@ while True:
         products.product_menu(products_list)
 
     elif user_input== "2":
-        while True:
-            print_courier_menu()
-            courier_choice = input("Enter Option: ")
-
-            if courier_choice == "0":
-                break
-
-            if courier_choice == "1":
-                print_courier_list()
-                
-
-            if courier_choice == "2":
-                try:
-                    new_courier = input("Enter the name of courier: ")
-                    if new_courier in courier_list:
-                        print("Courier already exists")
-
-                    else:
-                        courier_list.append(new_courier)
-                        print ("New Courier Added")
-                        print_courier_list()
-                except:
-                    print("Invalid Input")
-                
-
-            if courier_choice == "3":
-                while True:
-                    if len(courier_list) == 0:
-                        print("WARNING - Courier list is empty returning back to menu")
-                        break
-                    
-                    else:
-                        print_courier_list()
-                        try:
-                            index = int(input("Enter index to update: "))
-                            if 0 <= index <= len(courier_list):
-                                new_name = input("Enter a new name: ")
-                                if new_name in courier_list:
-                                    print ("Courier already exists")
-
-                                else:
-                                    courier_list[index] = new_name
-                                    print ("Updated Sucessfully")
-                                    print_courier_list()
-                                    break
-                        except:
-                            print ("Invalid Input")
-                        else:
-                            print ("Invalid Input")
-
-                
-
-            if courier_choice == "4":
-                while True:
-                    if len(courier_list) == 0:
-                        print("WARNING - Courier list is empty returning back to menu")
-                        break
-
-                    else:
-                        print_courier_list()
-                        try:
-                            index = int(input("Enter index to delete: "))
-                            if 0 <= index <+ len(courier_list):
-                                courier_list.pop(index)
-                                print("Courier Deleted")
-                                print_courier_list()
-                                break
-                            else:
-                                print("Invalid Input")
-                        except:
-                            print ("Invalid Input")
-            else: 
-                print ("Invalid Input")
+        courier_menu()
+        
     elif user_input == "3":
         orders.order_menu()
         # print(orders.__file__)
@@ -179,5 +182,3 @@ while True:
 
     else:
         print("Invalid input ")
-
-        
