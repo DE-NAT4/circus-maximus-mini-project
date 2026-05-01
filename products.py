@@ -1,3 +1,7 @@
+import csv
+from csv import DictReader
+
+
 def print_product_menu():
     print("\n ------ Products Menu ------")
     print("|\t\t\t|")
@@ -25,6 +29,9 @@ def load_products():
     products = []
     try:
         with open('Products.txt', 'r') as file:
+        #    dict_reader = DictReader(file)
+        #    products_list = list(dict_reader)
+        #    print (products_list)
             for product in file:
                 products.append(product.strip())
     except FileNotFoundError:
@@ -53,15 +60,24 @@ def product_menu(products_list):
                     while True:
                         try:         
                             new_product = input("Enter new product name: ")
-
-                            if new_product in products_list:
-                                print ("this product already exists")
+                            # Checks each dicts Name key value and if the name matches a duplicate will not move
+                            for products in products_list:
+                                if new_product == products["Name"]:
+                                    print ("This product already exists")
+                                    break
                             else:
-                                products_list.append(new_product)
-                                print(products_list)
-                                break
+                                try:
+                                    new_product_prince = float(input("Enter a price for this product: "))
+                                    products_list.append({
+                                    "Name": new_product,
+                                    "Price": new_product_prince
+                                    })
+                                    print(products_list)
+                                    break
+                                except: ValueError
+                                print("Please Enter a valid price")
                         except: ValueError
-                        print("please eneter a new product")
+                        print("Please enter a new product")
                             
                 elif product_choice == "3":
                     while True:
@@ -70,15 +86,23 @@ def product_menu(products_list):
                                 print (index, product)
                             update_select_index = int(input("Please select the index of what you want to update "))
                             if   0 <= update_select_index < len(products_list):
-                            #if update_select_index in products_list:
-                                update_select_name = str(input("Please enter a new name "))
-                                if update_select_name in products_list:
-                                    print ("This item already exists")
-                                else:
-                                    products_list[update_select_index] = update_select_name
-                                    print ("Product updated")
-                                    print (products_list)
-                                    break
+                                update_product = products_list[update_select_index]
+
+                                for key in update_product:
+                                    # Cycles through keys getting input for values if blank doesnt change
+                                    new_value = input(f"Update {key}? Leave blank to keep {update_product[key]}: ")
+                                    if new_value != "":
+                                        # Checks each dicts Name key value and if the name matches a duplicate will skip and not update
+                                        for products in products_list:
+                                            if new_value in products["Name"]:
+                                                print("Already in list")
+                                                break
+                                        else:
+                                            update_product[key] = new_value
+
+                                print ("Product updated")
+                                print (products_list)
+                                break
                             else: 
                                 print ("Invalid Index")
                         except ValueError:
