@@ -1,5 +1,5 @@
 import csv
-from csv import DictReader
+
 
 
 def print_product_menu():
@@ -17,9 +17,11 @@ def print_product_menu():
 def save_products(products):
     #Save products back to Products.txt file
     try:
-        with open('Products.txt', 'w') as file:
-            for product in products:
-                file.write(product + '\n')
+        with open('Products.csv', 'w') as file:
+            headers = ["Name","Price"]
+            f = csv.DictWriter(file, fieldnames=headers)
+            f.writeheader()
+            f.writerows(products)
     except Exception as e:
         print(f"Error saving products: {e}")
 
@@ -28,22 +30,21 @@ def load_products():
     #Load products from Products.txt file
     products = []
     try:
-        with open('Products.txt', 'r') as file:
-        #    dict_reader = DictReader(file)
-        #    products_list = list(dict_reader)
-        #    print (products_list)
-            for product in file:
-                products.append(product.strip())
+        file = open("Products.csv", "r")
+        f = csv.DictReader(file)
+        for dictonary in f:
+            products.append(dictonary)
     except FileNotFoundError:
         print("Product not found. Using default products.")
-        products = ["Mocha", "Americano", "Cappucino", "Latte", "Tea"]
+        products = [
+        {"Name":"Tea",
+        "Price":2.99},
+        {"Name":"Latte",
+        "Price":1.99}
+        ]
+
     return products
-
-
-
-
-
-
+        
 
 def product_menu(products_list):
             while True:
