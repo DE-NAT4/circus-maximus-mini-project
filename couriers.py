@@ -27,8 +27,6 @@ def load_couriers():
         ]
     return couriers
 
-
-
 def save_couriers(couriers):
     """Save couriers back to couriers.txt file"""
     try:
@@ -39,8 +37,12 @@ def save_couriers(couriers):
         print(f"Error saving couriers: {e}")
 
 def print_courier_list(courier_list):
-    for courier in enumerate(courier_list):
-        print (courier)
+    if len(courier_list) == 0:
+            print("WARNING - Courier list is empty returning back to menu")
+            
+    else:
+        for courier in enumerate(courier_list):
+            print(courier)
 
 def add_courier(courier_list):
     try:
@@ -72,14 +74,16 @@ def update_courier(courier_list):
             print_courier_list(courier_list)
             try:
                 index = int(input("Enter index to update: "))
-                print(courier_list[index])
-    
+                print(courier_list[index])      # catch index error immediately
+
+                # Ask user for courier name and phone number and put values in a dict
                 new_name = input("Enter a new name: ")
                 new_phone_num = input("Enter a new phone number: ")
                 updated_courier = {
                     'name': new_name,
                     'phone': new_phone_num
                 }
+                # Check if courier already exist 
                 if updated_courier not in courier_list:
                     courier_list[index] = updated_courier
                     print ("Updated Sucessfully")
@@ -91,11 +95,24 @@ def update_courier(courier_list):
                         
             except Exception as e:
                 print(f"Error: {e}")
-                
-            
+                            
+def remove_courier(courier_list):
+    while True:
+        if len(courier_list) == 0:
+            print("WARNING - Courier list is empty returning back to menu")
+            break
 
+        else:
+            print_courier_list(courier_list)
+            try:
+                index = int(input("Enter index to delete: "))
+                print(courier_list[index])      # catch index error immediately
 
-
+                courier_list.pop(index)
+                print("Courier Deleted")
+                break
+            except Exception as e:
+                print(f"Error: {e}")
 
 def courier_menu(courier_list):
     while True:
@@ -108,35 +125,15 @@ def courier_menu(courier_list):
         elif courier_choice == "1":
             print_courier_list(courier_list)
             
-
         elif courier_choice == "2":
             add_courier(courier_list)            
             
-
         elif courier_choice == "3":
             update_courier(courier_list)
             
-                
-
         elif courier_choice == "4":
-            while True:
-                if len(courier_list) == 0:
-                    print("WARNING - Courier list is empty returning back to menu")
-                    break
+            remove_courier(courier_list)
 
-                else:
-                    print_courier_list(courier_list)
-                    try:
-                        index = int(input("Enter index to delete: "))
-                        if 0 <= index <+ len(courier_list):
-                            courier_list.pop(index)
-                            print("Courier Deleted")
-                            print_courier_list(courier_list)
-                            break
-                        else:
-                            print("Invalid Input")
-                    except:
-                        print ("Invalid Input")
         else: 
             print ("Invalid Input")
 
