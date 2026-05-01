@@ -1,3 +1,5 @@
+import csv
+
 def print_courier_menu():
     print("\n ----- Courier Menu -----")
     print("|\t\t\t|")
@@ -14,9 +16,16 @@ def load_couriers():
     """Load couriers from couriers.txt file"""
     couriers = []
     try:
-        with open('couriers.csv', 'r') as file:
-            for courier in file:
-                couriers.append(courier.strip())
+        with open('couriers.csv', 'r', newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                courier = {
+                    'name': row['name'],
+                    'phone': row['phone']
+                }
+
+                couriers.append(courier)
+                
     except FileNotFoundError:
         print("Courier not found. Using default couriers.")
         couriers = [
@@ -30,9 +39,14 @@ def load_couriers():
 def save_couriers(couriers):
     """Save couriers back to couriers.txt file"""
     try:
-        with open('couriers.txt', 'w') as file:
+        with open('couriers.csv', 'w', newline='') as csvfile:
+            fieldnames = ['name', 'phone']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
             for courier in couriers:
-                file.write(courier + '\n')
+                writer.writerow({'name': courier['name'], 'phone': courier['phone']})
+
     except Exception as e:
         print(f"Error saving couriers: {e}")
 
