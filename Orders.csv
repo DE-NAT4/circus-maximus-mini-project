@@ -1,0 +1,5 @@
+customer_name,customer_address,customer_phone,courier,status,items
+John,"Main Street, LONDON",0789887334,John,preparing,"Tea, Latte"
+Jack,"Swansea, WA",07140843953,Mark,order received,Coffee
+Stones,"Middlesbourough, WM",032850985,Steve,On the way,Latte
+Abraham,Stoke city,09380480498,Luke,Pending,Tea
