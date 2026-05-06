@@ -1,5 +1,9 @@
 # data containers
 Products.txt
+couriers.csv
+orders.csv
+products.csv
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
