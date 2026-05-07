@@ -1,5 +1,6 @@
 customer_name,customer_address,customer_phone,courier,status,items
-John,"Main Street, LONDON",0789887334,John,Pending,"Tea, Latte"
-Jack,"Swansea, WA",07140843953,Mark,order received,Coffee
-Stones,"Middlesbourough, WM",032850985,Steve,On the way,Latte
-Abraham,Stoke city,09380480498,Luke,Pending,Tea
+John Doe,123 Main St,555-1234,Courier A,Pending,"['Tea', 'Latte']"
+Jane Smith,456 Elm St,555-5678,Courier B,On the way,['Latte']
+Bob Johnson,789 Oak St,555-9012,Courier C,Delivered,"['Tea', 'Coffee']"
+Jack,clintwood,0742948412,Luke,preparing,Product 5
+harold,glasgow,0784832943,Mark,order received,Milk

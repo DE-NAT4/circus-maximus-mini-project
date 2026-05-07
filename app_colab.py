@@ -3,14 +3,12 @@ import products
 import couriers
 
 
-
-
 products_list = products.load_products()
 
 courier_list = couriers.load_couriers()
+
+order_list = orders.load_orders(courier_list, products_list)
 # checking branches
-
-
 
 
 def print_main_menu():
@@ -25,22 +23,6 @@ def print_main_menu():
 
 
 
-
-
-
-
-order_list = [{
-    "Customer Name": "John",
-    "Customer Address":"Bradford",
-    "Customer Phone":"071111111",
-    "Order Status": "Pending"
-    }]
-
-
-    
-
-
-
 while True:
     print_main_menu()
     user_input = input("Enter option: ")
@@ -50,6 +32,7 @@ while True:
         if saveconf == "y":
             products.save_products(products_list)
             couriers.save_couriers(courier_list)
+            orders.save_orders(order_list)
             print("Saving and Exiting app...")
             exit()
             break
@@ -69,7 +52,7 @@ while True:
         couriers.courier_menu(courier_list)
         
     elif user_input == "3":
-        orders.order_menu()
+        orders.order_menu(courier_list, products_list, order_list)
         # print(orders.__file__)
         # print(dir(orders))
 

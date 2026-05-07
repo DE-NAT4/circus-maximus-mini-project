@@ -75,10 +75,10 @@ def product_menu(products_list):
                                     })
                                     print(products_list)
                                     break
-                                except: ValueError
-                                print("Please Enter a valid price")
-                        except: ValueError
-                        print("Please enter a new product")
+                                except ValueError:
+                                    print("Please Enter a valid price")
+                        except ValueError:
+                            print("Please enter a new product")
                             
                 elif product_choice == "3":
                     while True:
@@ -94,8 +94,8 @@ def product_menu(products_list):
                                     new_value = input(f"Update {key}? Leave blank to keep {update_product[key]}: ")
                                     if new_value != "":
                                         # Checks each dicts Name key value and if the name matches a duplicate will skip and not update
-                                        for products in products_list:
-                                            if new_value in products["Name"]:
+                                        for prod in products_list:
+                                            if new_value in prod["Name"]:
                                                 print("Already in list")
                                                 break
                                         else:
