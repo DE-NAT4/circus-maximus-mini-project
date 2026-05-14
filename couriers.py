@@ -1,4 +1,74 @@
 import csv
+import psycopg2
+from dotenv import load_dotenv
+import os
+
+#######################################
+# TEST: DATABASE CREATION AND CONNECTION
+# delete later
+
+load_dotenv()
+
+def get_connection():
+    return psycopg2.connect(
+        host=os.getenv("POSTGRES_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD")
+    )
+
+def check_database():
+    try:
+        with get_connection() as conn:
+            print("Connection successful!")
+
+    except Exception as e:
+        print(f"Connection failed: {e}")
+
+check_database()
+
+def create_tables():
+    conn = get_connection() # Call the get_connection() function
+    cur = conn.cursor() # Call the cursor method against the 'conn' object
+
+    # Create a table using the cursor's execute method
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS couriers (
+            id SERIAL PRIMARY KEY,
+            name TEXT NOT NULL,
+            phone TEXT NOT NULL
+        );
+    """)
+    
+    conn.commit() # Commit changes to DB
+    cur.close() # Close cursor
+    conn.close() # Close connection
+    print("Table created successfully!")
+    
+# create_tables() # Call function    
+
+def dummy_values_load():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO couriers (name, phone) VALUES
+        ('Alice Johnson', '07123456789'),
+        ('Bob Smith', '07234567890'),
+        ('Charlie Brown', '07345678901');
+    """)
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Dummy Values loaded")
+
+# dummy_values_load()
+
+#########################################    
+
+
 
 def print_courier_menu():
     print("\n ----- Courier Menu -----")
@@ -36,6 +106,9 @@ def load_couriers():
         ]
     return couriers
 
+# def load_couriers():
+#     pass
+
 def save_couriers(couriers):
     """Save couriers back to couriers.txt file"""
     try:
@@ -50,13 +123,32 @@ def save_couriers(couriers):
     except Exception as e:
         print(f"Error saving couriers: {e}")
 
-def print_courier_list(courier_list):
-    if len(courier_list) == 0:
-            print("WARNING - Courier list is empty returning back to menu")
+# def print_courier_list(courier_list):
+#     if len(courier_list) == 0:
+#             print("WARNING - Courier list is empty returning back to menu")
             
-    else:
-        for courier in enumerate(courier_list):
-            print(courier)
+#     else:
+#         for courier in enumerate(courier_list):
+#             print(courier)
+
+def print_courier_list():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT * FROM couriers
+                """)
+
+                couriers = cur.fetchall()
+                if couriers:
+                    print(couriers)
+                else:
+                    print(f'No Couriers')
+
+    except Exception as e:
+        print(f'Error: {e}')
+
+print_courier_list()
 
 def add_courier(courier_list):
     try:
@@ -137,7 +229,7 @@ def courier_menu(courier_list):
             break
 
         elif courier_choice == "1":
-            print_courier_list(courier_list)
+            print_courier_list()
             
         elif courier_choice == "2":
             add_courier(courier_list)            
@@ -151,3 +243,6 @@ def courier_menu(courier_list):
         else: 
             print ("Invalid Input")
 
+
+# Ideas:
+# - add a function that drops data from tables so we can start with a clean test env
