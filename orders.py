@@ -179,7 +179,7 @@ def update_order_status(order_list):
     return False
 
 
-def update_order_details(order_list):
+def update_order_details(order_list, couriers, products):
     if not order_list:
         print('No orders available to update.')
         return False
@@ -187,10 +187,31 @@ def update_order_details(order_list):
     try:
         index = int(input('Select order index: '))
         order = order_list[index]
-        for key in ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']:
+
+        for key in ['customer_name', 'customer_address', 'customer_phone']:
             new_value = input(f"Update {key} (leave blank to keep '{order.get(key, '')}'): ")
             if new_value.strip():
                 order[key] = new_value.strip()
+
+        new_courier = choose_courier(couriers)
+        if new_courier.strip():
+            order['courier'] = new_courier.strip()
+
+        new_items = choose_products(products)
+        if new_items.strip():
+            order['items'] = new_items.strip()
+
+        print('Choose the new status:')
+        for i, status_option in enumerate(STATUSES):
+            print(f'{i}: {status_option}')
+        status_input = input('Enter status index (leave blank to keep current): ').strip()
+        if status_input:
+            status_index = int(status_input)
+            if 0 <= status_index < len(STATUSES):
+                order['status'] = STATUSES[status_index]
+            else:
+                print('Invalid status index, keeping current status.')
+
         print('Order updated.')
         return True
     except (IndexError, ValueError):
@@ -229,7 +250,7 @@ def order_menu(couriers, products, order_list):
         elif choice == '3':
             update_order_status(order_list)
         elif choice == '4':
-            update_order_details(order_list)   
+            update_order_details(order_list, couriers, products)
         elif choice == '5':
             delete_order(order_list)
         else:
