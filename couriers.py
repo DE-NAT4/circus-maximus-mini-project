@@ -81,7 +81,8 @@ def print_courier_menu():
     print("|\t\t\t|")
     print("------------------------")
 
-
+######################################
+# Not needed anymore
 def load_couriers():
     """Load couriers from couriers.txt file"""
     couriers = []
@@ -120,14 +121,7 @@ def save_couriers(couriers):
 
     except Exception as e:
         print(f"Error saving couriers: {e}")
-
-# def print_courier_list(courier_list):
-#     if len(courier_list) == 0:
-#             print("WARNING - Courier list is empty returning back to menu")
-            
-#     else:
-#         for courier in enumerate(courier_list):
-#             print(courier)
+#########################################
 
 def print_courier_list():
     try:
@@ -146,8 +140,6 @@ def print_courier_list():
 
     except Exception as e:
         print(f'Error: {e}')
-
-print_courier_list()
 
 def print_courier(courier_id):
     try:
@@ -169,8 +161,6 @@ def print_courier(courier_id):
     except Exception as e:
         print(f'Error: {e}')
 
-print_courier(4)
-
 def add_courier():
     # Ask user to enter a name and a phone number
     new_courier = input("Enter the name of courier: ")          
@@ -184,40 +174,6 @@ def add_courier():
 
     except Exception as e:
         print(f"Error: {e}")
-
-# add_courier()
-
-# def update_courier(courier_list):
-#     while True:
-#         if len(courier_list) == 0:
-#             print("WARNING - Courier list is empty returning back to menu")
-#             break
-        
-#         else:
-#             print_courier_list(courier_list)
-#             try:
-#                 index = int(input("Enter index to update: "))
-#                 print(courier_list[index])      # catch index error immediately
-
-#                 # Ask user for courier name and phone number and put values in a dict
-#                 new_name = input("Enter a new name: ")
-#                 new_phone_num = input("Enter a new phone number: ")
-#                 updated_courier = {
-#                     'name': new_name,
-#                     'phone': new_phone_num
-#                 }
-#                 # Check if courier already exist 
-#                 if updated_courier not in courier_list:
-#                     courier_list[index] = updated_courier
-#                     print ("Updated Sucessfully")
-#                     break
-
-#                 else:
-#                     print ("Courier already exists")
-#                     break
-                        
-#             except Exception as e:
-#                 print(f"Error: {e}")
 
 def update_courier_name(id_choice, new_name):
     try: 
@@ -249,9 +205,6 @@ def update_courier_phone(id_choice, new_phone):
     except Exception as e:
         print(f"Error: {e}")
 
-
-
-
 def update_courier():
     print_courier_list()
 
@@ -270,48 +223,21 @@ def update_courier():
         if new_courier_phone != "":
             update_courier_phone(id_choice=id_choice, new_phone=new_courier_phone)
 
-
-
-# update_courier()
-                            
-# def remove_courier(courier_list):
-# while True:
-#     if len(courier_list) == 0:
-#         print("WARNING - Courier list is empty returning back to menu")
-#         break
-
-#     else:
-#         print_courier_list(courier_list)
-#         try:
-#             index = int(input("Enter index to delete: "))
-#             print(courier_list[index])      # catch index error immediately
-
-#             courier_list.pop(index)
-#             print("Courier Deleted")
-#             break
-#         except Exception as e:
-#             print(f"Error: {e}")
-
 def remove_courier():
-    # while True:
-        print_courier_list()
-        delete_id = input("Enter the id of courier to delete: ")
-        try:
-            with get_connection() as conn:
-                with conn.cursor() as cur:
-                    sql = """DELETE FROM couriers
-                    WHERE courier_id = %s"""
-                
-                    cur.execute(sql, (delete_id,))
-                    print("Courier deleted")
-                    # break
+    print_courier_list()
+    delete_id = input("Enter the id of courier to delete: ")
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                sql = """DELETE FROM couriers
+                WHERE courier_id = %s"""
+            
+                cur.execute(sql, (delete_id,))
+                print("Courier deleted")
 
-        except Exception as e:
-            print(f"Error: {e}")
+    except Exception as e:
+        print(f"Error: {e}")
     
-# remove_courier()
-
-
 def courier_menu():
     while True:
         print_courier_menu()
@@ -334,7 +260,3 @@ def courier_menu():
 
         else: 
             print ("Invalid Input")
-
-
-# Ideas:
-# - add a function that drops data from tables so we can start with a clean test env
