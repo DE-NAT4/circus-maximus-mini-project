@@ -17,37 +17,7 @@ def print_product_menu():
     print("------------------------")
 
 
-def save_products(products):
-    #Save products back to Products.txt file
-    try:
-        with open('Products.csv', 'w') as file:
-            headers = ["Name","Price"]
-            f = csv.DictWriter(file, fieldnames=headers)
-            f.writeheader()
-            f.writerows(products)
-    except Exception as e:
-        print(f"Error saving products: {e}")
 
-
-# def load_products():
-#     #Load products from Products.txt file
-#     products = []
-#     try:
-#         file = open("Products.csv", "r")
-#         f = csv.DictReader(file)
-#         for dictonary in f:
-#             products.append(dictonary)
-#     except FileNotFoundError:
-#         print("Product not found. Using default products.")
-#         products = [
-#         {"Name":"Tea",
-#         "Price":2.99},
-#         {"Name":"Latte",
-#         "Price":1.99}
-#         ]
-
-    return products
-        
 
 def product_menu():
             while True:
@@ -70,8 +40,10 @@ def product_menu():
                             new_product_price = float(input("Enter a price for this product: "))
                             insert_products(new_product, new_product_price)
                             break
-                        except: ValueError
-                        print("Please enter a new product")
+                        except: 
+                            print("Invalid Input")
+                            cursor.close()
+                            break
                             
                 elif product_choice == "3":
                     while True:
@@ -100,17 +72,18 @@ def product_menu():
                             print("Invalid Input ")
                             cursor.close()
                             break
-    
-
-
-
 
                 elif product_choice == "4":
                     while True:
-                        retrieve_products()
-                        delete_id = (input("please select the ID of what you want to delete "))
-                        delete_product(delete_id)
-                        break
+                        try:
+                            retrieve_products()
+                            delete_id = (input("please select the ID of what you want to delete "))
+                            delete_product(delete_id)
+                            break
+                        except:
+                            print("Invalid Input")
+                            cursor.close()
+                            break
 
 
 ####################################################################

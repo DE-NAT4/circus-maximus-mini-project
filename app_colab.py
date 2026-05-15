@@ -3,14 +3,8 @@ import products
 import couriers
 
 
-
-
-# products_list = products.load_products()
-
 courier_list = couriers.load_couriers()
 # checking branches
-
-
 
 
 def print_main_menu():
@@ -24,20 +18,12 @@ def print_main_menu():
     print("------------------------")
 
 
-
-
-
-
-
 order_list = [{
     "Customer Name": "John",
     "Customer Address":"Bradford",
     "Customer Phone":"071111111",
     "Order Status": "Pending"
     }]
-
-
-    
 
 
 
@@ -48,7 +34,6 @@ while True:
     if user_input == "0":
         saveconf = input("Do you want to save your changes y/n: ")
         if saveconf == "y":
-            products.save_products(products_list)
             couriers.save_couriers(courier_list)
             print("Saving and Exiting app...")
             exit()
