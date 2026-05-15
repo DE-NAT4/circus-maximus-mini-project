@@ -29,27 +29,27 @@ def save_products(products):
         print(f"Error saving products: {e}")
 
 
-def load_products():
-    #Load products from Products.txt file
-    products = []
-    try:
-        file = open("Products.csv", "r")
-        f = csv.DictReader(file)
-        for dictonary in f:
-            products.append(dictonary)
-    except FileNotFoundError:
-        print("Product not found. Using default products.")
-        products = [
-        {"Name":"Tea",
-        "Price":2.99},
-        {"Name":"Latte",
-        "Price":1.99}
-        ]
+# def load_products():
+#     #Load products from Products.txt file
+#     products = []
+#     try:
+#         file = open("Products.csv", "r")
+#         f = csv.DictReader(file)
+#         for dictonary in f:
+#             products.append(dictonary)
+#     except FileNotFoundError:
+#         print("Product not found. Using default products.")
+#         products = [
+#         {"Name":"Tea",
+#         "Price":2.99},
+#         {"Name":"Latte",
+#         "Price":1.99}
+#         ]
 
     return products
         
 
-def product_menu(products_list):
+def product_menu():
             while True:
                 print_product_menu()
                 product_choice = input("Enter option: ")
@@ -77,28 +77,31 @@ def product_menu(products_list):
                     while True:
                         # Calls upon functions to print the database and update either name or price using the previously selected id. If it is blank it will pass the function to update 
                         #MISSING ERROR HANDLING
-
-                        retrieve_products()
-                        select_id = (input("Please select an id to update "))
-                        print("Product selected: ")
-                        retrieve_product(select_id)
-                        upd_name = input("Please select a new name - Leave blank to keep ")
-                        if upd_name != "":
-                            update_products_name(select_id, upd_name)
-                            pass
-                        else:
-                            pass
                         try:
-                            upd_price = float(input("Please select a new price - Leave blank to keep "))
-                            if upd_price != "":
-                                update_product_price(select_id, upd_price)
+                            retrieve_products()
+                            select_id = (input("Please select an id to update "))
+                            print("Product selected: ")
+                            retrieve_product(select_id)
+                            upd_name = input("Please select a new name - Leave blank to keep ")
+                            if upd_name != "":
+                                update_products_name(select_id, upd_name)
                                 pass
                             else:
                                 pass
-                            break
+                            
+                                upd_price = float(input("Please select a new price - Leave blank to keep "))
+                                if upd_price != "":
+                                    update_product_price(select_id, upd_price)
+                                    pass
+                                else:
+                                    pass
+                                break
                         except:
-                            print ("Invalid price entered ")
+                            print("Invalid Input ")
+                            cursor.close()
                             break
+    
+
 
 
 
@@ -129,12 +132,16 @@ user_name = os.environ.get("POSTGRES_USER")
 user_password = os.environ.get("POSTGRES_PASSWORD")
 
 
+
 conn_string = f'host={host_name} dbname={database_name} user={user_name} password={user_password}'
 # Establish a database connection
-with psycopg2.connect(conn_string) as connection:
+try:
+    with psycopg2.connect(conn_string) as connection:
 
-    # print('Opening cursor...')
-    cursor = connection.cursor()
+        # print('Opening cursor...')
+        cursor = connection.cursor()
+except:
+    print("WARNING - Failed to connect to database ")
 
 def insert_products(new_product, new_product_price):
     cursor = connection.cursor()
@@ -147,7 +154,6 @@ def insert_products(new_product, new_product_price):
     connection.commit()
 
     cursor.close()
-
 
 def retrieve_products():
     cursor = connection.cursor()

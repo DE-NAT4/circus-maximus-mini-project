@@ -5,7 +5,7 @@ import couriers
 
 
 
-products_list = products.load_products()
+# products_list = products.load_products()
 
 courier_list = couriers.load_couriers()
 # checking branches
@@ -63,7 +63,7 @@ while True:
             print ("Invalid Input")
     
     elif user_input == "1":
-        products.product_menu(products_list)
+        products.product_menu()
 
     elif user_input== "2":
         couriers.courier_menu(courier_list)
