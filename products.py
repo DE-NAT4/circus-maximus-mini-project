@@ -1,5 +1,8 @@
 import csv
-
+import os
+from dotenv import load_dotenv
+import csv
+import psycopg2
 
 
 def print_product_menu():
@@ -14,39 +17,9 @@ def print_product_menu():
     print("------------------------")
 
 
-def save_products(products):
-    #Save products back to Products.txt file
-    try:
-        with open('Products.csv', 'w') as file:
-            headers = ["Name","Price"]
-            f = csv.DictWriter(file, fieldnames=headers)
-            f.writeheader()
-            f.writerows(products)
-    except Exception as e:
-        print(f"Error saving products: {e}")
 
 
-def load_products():
-    #Load products from Products.txt file
-    products = []
-    try:
-        file = open("Products.csv", "r")
-        f = csv.DictReader(file)
-        for dictonary in f:
-            products.append(dictonary)
-    except FileNotFoundError:
-        print("Product not found. Using default products.")
-        products = [
-        {"Name":"Tea",
-        "Price":2.99},
-        {"Name":"Latte",
-        "Price":1.99}
-        ]
-
-    return products
-        
-
-def product_menu(products_list):
+def product_menu():
             while True:
                 print_product_menu()
                 product_choice = input("Enter option: ")
@@ -55,71 +28,187 @@ def product_menu(products_list):
                     break
 
                 elif product_choice == "1":
-                    print(products_list)
+                    # gets all the products from the database and prints them
+                    retrieve_products()
                     
                 elif product_choice == "2":
                     while True:
+                        # Gets input for a new product and inserts it into database
                         try:         
                             new_product = input("Enter new product name: ")
-                            # Checks each dicts Name key value and if the name matches a duplicate will not move
-                            for products in products_list:
-                                if new_product == products["Name"]:
-                                    print ("This product already exists")
-                                    break
+                            new_product_price = float(input("Enter a price for this product: "))
+                            product_name = new_product
+                            if check_product_exists(product_name) == False:
+                                insert_products(new_product, new_product_price)
+                                retrieve_products()
+                                break
                             else:
-                                try:
-                                    new_product_prince = float(input("Enter a price for this product: "))
-                                    products_list.append({
-                                    "Name": new_product,
-                                    "Price": new_product_prince
-                                    })
-                                    print(products_list)
-                                    break
-                                except: ValueError
-                                print("Please Enter a valid price")
-                        except: ValueError
-                        print("Please enter a new product")
+                                cursor.close()
+                        except: 
+                            print("Invalid Input")
+                            cursor.close()
+                            break
                             
                 elif product_choice == "3":
                     while True:
+                        # Calls upon functions to print the database and update either name or price using the previously selected id. If it is blank it will pass the function to update 
+                        #MISSING ERROR HANDLING
                         try:
-                            for (index, product) in enumerate(products_list):
-                                print (index, product)
-                            update_select_index = int(input("Please select the index of what you want to update "))
-                            if   0 <= update_select_index < len(products_list):
-                                update_product = products_list[update_select_index]
-
-                                for key in update_product:
-                                    # Cycles through keys getting input for values if blank doesnt change
-                                    new_value = input(f"Update {key}? Leave blank to keep {update_product[key]}: ")
-                                    if new_value != "":
-                                        # Checks each dicts Name key value and if the name matches a duplicate will skip and not update
-                                        for products in products_list:
-                                            if new_value in products["Name"]:
-                                                print("Already in list")
-                                                break
-                                        else:
-                                            update_product[key] = new_value
-
-                                print ("Product updated")
-                                print (products_list)
+                            retrieve_products()
+                            select_id = (input("Please select an id to update "))
+                            print("Product selected: ")
+                            retrieve_product(select_id)
+                            upd_name = input("Please select a new name - Leave blank to keep ")
+                            if upd_name != "":
+                                product_name = upd_name
+                                if check_product_exists(product_name) == False:
+                                    update_products_name(select_id, upd_name)
+                                    pass
+                                else:
+                                    break
+                            else:
+                                pass
+                            
+                                upd_price = (input("Please select a new price - Leave blank to keep "))
+                                if upd_price != "":
+                                    update_product_price(select_id, upd_price)
+                                    pass 
+                                else:
+                                    pass
                                 break
-                            else: 
-                                print ("Invalid Index")
-                        except ValueError:
-                            print("Invalid input, please enter a number")
+                        except:
+                            print("Invalid Input ")
+                            cursor.close()
+                            break
 
                 elif product_choice == "4":
+                    # Retrieves a list of products and deletes via id input from the database
                     while True:
                         try:
-                            for (index, product) in enumerate(products_list):
-                                print (index, product)
-                            delete_select_index = int(input("please select the index of what you want to delete "))
-                            if 0 <= delete_select_index < len(products_list):
-                                products_list.pop(delete_select_index)
-                                print(f"Here is the new product list: {products_list}")
-                                break
-                            else:
-                                print("please enter a valid input")
-                        except ValueError:
-                            print("Invalid input, please enter a number")
+                            retrieve_products()
+                            delete_id = (input("please select the ID of what you want to delete "))
+                            delete_product(delete_id)
+                            break
+                        except:
+                            print("Invalid Input")
+                            cursor.close()
+                            break
+
+
+####################################################################
+#Database code - Some will be replaced when merged
+#WARNING UNTIL MAIN DATABASE IS MADE A TEMPORARY TABLE IS NEEDED below is the code needed to test this
+# CREATE TABLE products (
+#     product_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+#     product_name VARCHAR(255),
+#     product_price FLOAT
+# );
+
+
+
+# Connects to the database and gets all details from .env
+load_dotenv()
+host_name = os.environ.get("POSTGRES_HOST")
+database_name = os.environ.get("POSTGRES_DB")
+user_name = os.environ.get("POSTGRES_USER")
+user_password = os.environ.get("POSTGRES_PASSWORD")
+
+
+
+conn_string = f'host={host_name} dbname={database_name} user={user_name} password={user_password}'
+# Establishes a database connection
+try:
+    with psycopg2.connect(conn_string) as connection:
+
+        # print('Opening cursor...')
+        cursor = connection.cursor()
+except:
+    print("WARNING - Failed to connect to database ")
+
+#Inserts a new product into the table
+def insert_products(new_product, new_product_price):
+    cursor = connection.cursor()
+    insert = '''
+    INSERT INTO products (product_name, product_price)
+    VALUES (%s,%s)
+    '''
+
+    cursor.execute(insert, (new_product, new_product_price))
+    connection.commit()
+
+    cursor.close()
+
+# Retrieves all products from the table with id name and price and also pulls the collumn names and prints them
+def retrieve_products():
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM products')
+    products = (cursor.fetchall())
+    #Next two lines gets the column names puts them in a list and prints them
+    field_name = [desc[0] for desc in cursor.description]
+    print(field_name)
+    for product_row in products:
+        print(product_row)
+    cursor.close()
+
+#Retrieves a single product from a selected ID and prints it
+def retrieve_product(select_id):
+    cursor = connection.cursor()
+    product_pull = '''SELECT * FROM products
+    WHERE product_id = %s'''
+    cursor.execute(product_pull, select_id)
+    print(cursor.fetchall())
+    cursor.close()
+
+        
+# Updates the name of a product based off of ID
+def update_products_name(select_id, upd_name):
+    cursor = connection.cursor()
+    
+    update = '''
+    UPDATE products
+    SET product_name =%s
+    WHERE product_id = %s
+    '''
+    cursor.execute(update, (upd_name, select_id))
+    connection.commit()
+    
+    cursor.close()
+# Updates the price of a product based off of ID
+def update_product_price(select_id, upd_price):
+    cursor = connection.cursor()
+    
+    update = '''
+    UPDATE products
+    SET product_price =%s
+    WHERE product_id = %s
+    '''
+    cursor.execute(update, (upd_price, select_id))
+    connection.commit()
+    
+    cursor.close()
+
+#Deletes a product off the table using ID
+def delete_product(delete_id):
+    cursor = connection.cursor()
+    delete = 'DELETE FROM products WHERE product_id =%s'
+    cursor.execute(delete, (delete_id))
+    
+    connection.commit()
+    
+    cursor.close()
+
+
+# Searches if the name given is already in the database and returns true or false if it exists or not
+def check_product_exists(product_name):
+    cursor = connection.cursor()
+    check_product = '''SELECT * FROM products
+    WHERE product_name = %s'''
+    cursor.execute(check_product,(product_name,))
+    check = cursor.fetchone()
+    if check is not None:
+        print("Product already exists")
+        return True
+        
+    else:
+        print("Adding Product")
+        return False
