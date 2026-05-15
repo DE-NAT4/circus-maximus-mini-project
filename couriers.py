@@ -1,153 +1,142 @@
-import csv
+from database import execute, fetch_all
+
 
 def print_courier_menu():
     print("\n ----- Courier Menu -----")
-    print("|\t\t\t|")
+    print("|\t\t\t\t|")
     print("| 1. Print Courier list\t|")
     print("| 2. Add Courier\t|")
     print("| 3. Update Courier\t|")
     print("| 4. Remove Courier\t|")
     print("| 0. Main Menu\t\t|")
-    print("|\t\t\t|")
+    print("|\t\t\t\t|")
     print("------------------------")
 
 
 def load_couriers():
-    """Load couriers from couriers.txt file"""
-    couriers = []
-    try:
-        with open('couriers.csv', 'r', newline='') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                courier = {
-                    'name': row['name'],
-                    'phone': row['phone']
-                }
-
-                couriers.append(courier)
-                
-    except FileNotFoundError:
-        print("Courier not found. Using default couriers.")
-        couriers = [
-            {"name": "John",
-             "phone": "071111111111"},
-            {"name": "Mark",
-             "phone": "072222222222"} 
+    couriers = fetch_all('couriers')
+    if not couriers:
+        default = [
+            {'name': 'John', 'phone': '071111111111'},
+            {'name': 'Mark', 'phone': '072222222222'}
         ]
+        for courier in default:
+            execute(
+                'INSERT INTO couriers (name, phone) VALUES (?, ?)',
+                (courier['name'], courier['phone']),
+                commit=True
+            )
+        couriers = fetch_all('couriers')
     return couriers
 
+
 def save_couriers(couriers):
-    """Save couriers back to couriers.txt file"""
-    try:
-        with open('couriers.csv', 'w', newline='') as csvfile:
-            fieldnames = ['name', 'phone']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    # Data is persisted live to the database when menu operations run.
+    return
 
-            writer.writeheader()
-            for courier in couriers:
-                writer.writerow({'name': courier['name'], 'phone': courier['phone']})
-
-    except Exception as e:
-        print(f"Error saving couriers: {e}")
 
 def print_courier_list(courier_list):
-    if len(courier_list) == 0:
-            print("WARNING - Courier list is empty returning back to menu")
-            
+    if not courier_list:
+        print('WARNING - Courier list is empty returning back to menu')
     else:
-        for courier in enumerate(courier_list):
-            print(courier)
+        for courier in courier_list:
+            print(f"{courier['id']}: {courier['name']} ({courier['phone']})")
+
 
 def add_courier(courier_list):
     try:
-        # Ask user to enter a name and a phone number
-        new_courier = input("Enter the name of courier: ")          
-        new_courier_phone = input("Enter the phone number of courier: ")        
-        
-        courier = {
-            "name": new_courier,
-            "phone": new_courier_phone
-        }
-        # Check if the courier (name and phone number pair) already exists
-        if courier not in courier_list:
-            courier_list.append(courier)
-            print ("New Courier Added")
-        else:
-            print("Courier already exists")
-            
+        new_name = input('Enter the name of courier: ').strip()
+        new_phone = input('Enter the phone number of courier: ').strip()
+        if not new_name:
+            print('Courier name is required.')
+            return
+
+        if any(c['name'] == new_name and c['phone'] == new_phone for c in courier_list):
+            print('Courier already exists')
+            return
+
+        cursor = execute(
+            'INSERT INTO couriers (name, phone) VALUES (?, ?)',
+            (new_name, new_phone),
+            commit=True
+        )
+        courier_id = cursor.lastrowid
+        courier_list.append({'id': courier_id, 'name': new_name, 'phone': new_phone})
+        print('New Courier Added')
     except Exception as e:
-        print(f"Error: {e}")
+        print(f'Error: {e}')
+
 
 def update_courier(courier_list):
-    while True:
-        if len(courier_list) == 0:
-            print("WARNING - Courier list is empty returning back to menu")
-            break
-        
-        else:
-            print_courier_list(courier_list)
-            try:
-                index = int(input("Enter index to update: "))
-                print(courier_list[index])      # catch index error immediately
+    if not courier_list:
+        print('WARNING - Courier list is empty returning back to menu')
+        return
 
-                # Ask user for courier name and phone number and put values in a dict
-                new_name = input("Enter a new name: ")
-                new_phone_num = input("Enter a new phone number: ")
-                updated_courier = {
-                    'name': new_name,
-                    'phone': new_phone_num
-                }
-                # Check if courier already exist 
-                if updated_courier not in courier_list:
-                    courier_list[index] = updated_courier
-                    print ("Updated Sucessfully")
-                    break
+    print_courier_list(courier_list)
+    try:
+        courier_id = int(input('Enter courier id to update: '))
+    except ValueError:
+        print('Invalid id')
+        return
 
-                else:
-                    print ("Courier already exists")
-                    break
-                        
-            except Exception as e:
-                print(f"Error: {e}")
-                            
+    courier = next((c for c in courier_list if c['id'] == courier_id), None)
+    if not courier:
+        print('Courier not found')
+        return
+
+    new_name = input('Enter a new name (leave blank to keep current): ').strip() or courier['name']
+    new_phone = input('Enter a new phone number (leave blank to keep current): ').strip() or courier['phone']
+
+    if any(c['name'] == new_name and c['phone'] == new_phone and c['id'] != courier_id for c in courier_list):
+        print('Courier already exists')
+        return
+
+    execute(
+        'UPDATE couriers SET name = ?, phone = ? WHERE id = ?',
+        (new_name, new_phone, courier_id),
+        commit=True
+    )
+    courier.update({'name': new_name, 'phone': new_phone})
+    print('Updated Successfully')
+
+
 def remove_courier(courier_list):
-    while True:
-        if len(courier_list) == 0:
-            print("WARNING - Courier list is empty returning back to menu")
-            break
+    if not courier_list:
+        print('WARNING - Courier list is empty returning back to menu')
+        return
 
-        else:
-            print_courier_list(courier_list)
-            try:
-                index = int(input("Enter index to delete: "))
-                print(courier_list[index])      # catch index error immediately
+    print_courier_list(courier_list)
+    try:
+        courier_id = int(input('Enter courier id to delete: '))
+    except ValueError:
+        print('Invalid id')
+        return
 
-                courier_list.pop(index)
-                print("Courier Deleted")
-                break
-            except Exception as e:
-                print(f"Error: {e}")
+    courier = next((c for c in courier_list if c['id'] == courier_id), None)
+    if not courier:
+        print('Courier not found')
+        return
+
+    execute('DELETE FROM couriers WHERE id = ?', (courier_id,), commit=True)
+    courier_list.remove(courier)
+    print('Courier Deleted')
+
 
 def courier_menu(courier_list):
     while True:
         print_courier_menu()
-        courier_choice = input("Enter Option: ")
+        courier_choice = input('Enter Option: ')
 
-        if courier_choice == "0":
+        if courier_choice == '0':
             break
-
-        elif courier_choice == "1":
+        elif courier_choice == '1':
             print_courier_list(courier_list)
-            
-        elif courier_choice == "2":
-            add_courier(courier_list)            
-            
-        elif courier_choice == "3":
+        elif courier_choice == '2':
+            add_courier(courier_list)
+        elif courier_choice == '3':
             update_courier(courier_list)
-            
-        elif courier_choice == "4":
+        elif courier_choice == '4':
             remove_courier(courier_list)
-
-        else: 
-            print ("Invalid Input")
+        else:
+            print('Invalid Input')
 
