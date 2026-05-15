@@ -4,8 +4,6 @@ import couriers
 
 
 courier_list = couriers.load_couriers()
-# checking branches
-
 
 def print_main_menu():
     print(" ------ Main Menu ------")
