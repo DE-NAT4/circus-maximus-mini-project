@@ -1,5 +1,5 @@
-customer_name,customer_address,customer_phone,courier,status,items
-John Doe,123 Main St,555-1234,Courier A,Pending,"['Tea', 'Latte']"
-Jane Smith,456 Elm St,555-5678,Courier B,On the way,['Latte']
-Bob Johnson,789 Oak St,555-9012,Courier C,Delivered,"['Tea', 'Coffee']"
-hihih,Edenbrough,07070707077,Steve,Pending,Latte
+customer_name,customer_address,customer_phone,courier_id,status,items
+John Doe,123 Main St,555-1234,1,Pending,1
+Jane Smith,456 Elm St,555-5678,2,On the way,2
+Bob Johnson,789 Oak St,555-9012,3,Delivered,3
+hihih,Edenbrough,07070707077,4,Pending,4
