@@ -1,68 +1,66 @@
 import csv
-import psycopg2
-from dotenv import load_dotenv
-import os
+from db import get_connection
 
 #######################################
 # TEST: DATABASE CREATION AND CONNECTION
 # delete later
 
-load_dotenv()
+# load_dotenv()
 
-def get_connection():
-    return psycopg2.connect(
-        host=os.getenv("POSTGRES_HOST"),
-        port=os.getenv("DB_PORT"),
-        database=os.getenv("POSTGRES_DB"),
-        user=os.getenv("POSTGRES_USER"),
-        password=os.getenv("POSTGRES_PASSWORD")
-    )
+# def get_connection():
+#     return psycopg2.connect(
+#         host=os.getenv("POSTGRES_HOST"),
+#         port=os.getenv("DB_PORT"),
+#         database=os.getenv("POSTGRES_DB"),
+#         user=os.getenv("POSTGRES_USER"),
+#         password=os.getenv("POSTGRES_PASSWORD")
+#     )
 
-def check_database():
-    try:
-        with get_connection() as conn:
-            print("Connection successful!")
+# def check_database():
+#     try:
+#         with get_connection() as conn:
+#             print("Connection successful!")
 
-    except Exception as e:
-        print(f"Connection failed: {e}")
+#     except Exception as e:
+#         print(f"Connection failed: {e}")
 
-check_database()
+# check_database()
 
-def create_tables():
-    conn = get_connection() # Call the get_connection() function
-    cur = conn.cursor() # Call the cursor method against the 'conn' object
+# def create_tables():
+#     conn = get_connection() # Call the get_connection() function
+#     cur = conn.cursor() # Call the cursor method against the 'conn' object
 
-    # Create a table using the cursor's execute method
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS couriers (
-            courier_id SERIAL PRIMARY KEY,
-            name TEXT NOT NULL,
-            phone TEXT NOT NULL
-        );
-    """)
+#     # Create a table using the cursor's execute method
+#     cur.execute("""
+#         CREATE TABLE IF NOT EXISTS couriers (
+#             courier_id SERIAL PRIMARY KEY,
+#             name TEXT NOT NULL,
+#             phone TEXT NOT NULL
+#         );
+#     """)
     
-    conn.commit() # Commit changes to DB
-    cur.close() # Close cursor
-    conn.close() # Close connection
-    print("Table created successfully!")
+#     conn.commit() # Commit changes to DB
+#     cur.close() # Close cursor
+#     conn.close() # Close connection
+#     print("Table created successfully!")
     
-#create_tables() # Call function    
+# #create_tables() # Call function    
 
-def dummy_values_load():
-    conn = get_connection()
-    cur = conn.cursor()
+# def dummy_values_load():
+#     conn = get_connection()
+#     cur = conn.cursor()
 
-    cur.execute("""
-        INSERT INTO couriers (name, phone) VALUES
-        ('Alice Johnson', '07123456789'),
-        ('Bob Smith', '07234567890'),
-        ('Charlie Brown', '07345678901');
-    """)
+#     cur.execute("""
+#         INSERT INTO couriers (name, phone) VALUES
+#         ('Alice Johnson', '07123456789'),
+#         ('Bob Smith', '07234567890'),
+#         ('Charlie Brown', '07345678901');
+#     """)
 
-    conn.commit()
-    cur.close()
-    conn.close()
-    print("Dummy Values loaded")
+#     conn.commit()
+#     cur.close()
+#     conn.close()
+#     print("Dummy Values loaded")
 
 #dummy_values_load()
 
@@ -168,7 +166,7 @@ def add_courier():
     try: 
         with get_connection() as conn:
             with conn.cursor() as cur:
-                sql = "INSERT INTO couriers (name, phone) VALUES (%s, %s)"
+                sql = "INSERT INTO couriers (courier_name, courier_phone) VALUES (%s, %s)"
                 cur.execute(sql, (new_courier, new_courier_phone))
                 conn.commit()
 
@@ -181,7 +179,7 @@ def update_courier_name(id_choice, new_name):
             with conn.cursor() as cur:
                 sql = """
                 UPDATE couriers
-                SET name = %s
+                SET courier_name = %s
                 WHERE courier_id = %s
                 """
                 cur.execute(sql, (new_name, id_choice))
@@ -196,7 +194,7 @@ def update_courier_phone(id_choice, new_phone):
             with conn.cursor() as cur:
                 sql = """
                 UPDATE couriers
-                SET phone = %s
+                SET courier_phone = %s
                 WHERE courier_id = %s
                 """
                 cur.execute(sql, (new_phone, id_choice))
