@@ -33,6 +33,7 @@ while True:
         saveconf = input("Do you want to save your changes y/n: ")
         if saveconf == "y":
             couriers.save_couriers(courier_list)
+            products.save_products(products_list)
             print("Saving and Exiting app...")
             exit()
             break
@@ -49,7 +50,7 @@ while True:
         products.product_menu()
 
     elif user_input== "2":
-        couriers.courier_menu(courier_list)
+        couriers.courier_menu()
         
     elif user_input == "3":
         orders.order_menu()
