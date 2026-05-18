@@ -1,6 +1,12 @@
 import csv
 from couriers import load_couriers
 #from products import load_products
+import os
+from dotenv import load_dotenv
+import csv
+import psycopg2
+from products import retrieve_products
+from couriers import print_courier_list
 
 FIELDNAMES = ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']
 STATUSES = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
@@ -130,35 +136,51 @@ def print_order_list(order_list):
 
 
 # change
-def add_order(order_list, couriers, products):
-    customer_name = input('What is the new customer\'s name? ')
-    customer_address = input('What is the address of the customer? ')
-    customer_phone = input('What is the phone number of the customer? ')
-    courier = choose_courier(couriers)
-    status = 'Pending'
-    print('Choose the order status:')
-    for i, status_option in enumerate(STATUSES):
-        print(f'{i}: {status_option}')
-    try:
-        status_index = int(input('Enter status index: '))
-        if 0 <= status_index < len(STATUSES):
-            status = STATUSES[status_index]
-        else:
-            print('Invalid status index, defaulting to Pending.')
-    except ValueError:
-        print('Invalid status input, defaulting to Pending.')
-    items = choose_products(products)
-    order_list.append({
-        'customer_name': customer_name,
-        'customer_address': customer_address,
-        'customer_phone': customer_phone,
-        'courier': courier,
-        'status': status,
-        'items': items,
-    })
-    print('Order added to list')
-    return True
-
+# def add_order(order_list, couriers, products):
+    # customer_name = input('What is the new customer\'s name? ')
+    # customer_address = input('What is the address of the customer? ')
+    # customer_phone = input('What is the phone number of the customer? ')
+    # courier = choose_courier(couriers)
+    # status = 'Pending'
+    # print('Choose the order status:')
+    # for i, status_option in enumerate(STATUSES):
+    #     print(f'{i}: {status_option}')
+    # try:
+    #     status_index = int(input('Enter status index: '))
+    #     if 0 <= status_index < len(STATUSES):
+    #         status = STATUSES[status_index]
+    #     else:
+    #         print('Invalid status index, defaulting to Pending.')
+    # except ValueError:
+    #     print('Invalid status input, defaulting to Pending.')
+    # items = choose_products(products)
+    # order_list.append({
+    #     'customer_name': customer_name,
+    #     'customer_address': customer_address,
+    #     'customer_phone': customer_phone,
+    #     'courier': courier,
+    #     'status': status,
+    #     'items': items,
+    # })
+    # print('Order added to list')
+    # return True
+def add_order():
+    while True:
+        try:
+            new_customer_name = input('What is the new customer\'s name? ')
+            new_customer_address = input('What is the address of the customer? ')
+            new_customer_phone = int(input('What is the phone number of the customer? '))
+            retrieve_products()
+            #NEEDS TO BE CHANGED TO WORK WITH STRINGS
+            new_order_product = int(input("Please select your products using the ID "))
+            print_courier_list()
+            new_order_courier =  int(input("Please choose your courier using the ID "))
+            insert_order(new_customer_name, new_customer_address, new_customer_phone, new_order_product, new_order_courier)
+            break
+        except: 
+            print("Invalid Input")
+            cursor.close()
+            break
 # change
 def update_order_status(order_list):
     if not order_list:
@@ -239,22 +261,23 @@ def delete_order(order_list):
 
 
 # change
-def order_menu(couriers, products, order_list):
+def order_menu():
     while True:
         print_order_menu()
         choice = input('Please select an option: ')
         if choice == '0':
             break
-        elif choice == '1':
-            print_order_list(order_list)
+        # elif choice == '1':
+        #     print_order_list(order_list)
         elif choice == '2':
-            add_order(order_list, couriers, products)
-        elif choice == '3':
-            update_order_status(order_list)
-        elif choice == '4':
-            update_order_details(order_list, couriers, products)
-        elif choice == '5':
-            delete_order(order_list)
+            # add_order(order_list, couriers, products)
+            add_order()
+        # elif choice == '3':
+        #     update_order_status(order_list)
+        # elif choice == '4':
+        #     update_order_details(order_list, couriers, products)
+        # elif choice == '5':
+        #     delete_order(order_list)
         else:
             print('Invalid input')
 
@@ -265,3 +288,32 @@ def order_menu(couriers, products, order_list):
 #     orders = load_orders(couriers, products)
 #     order_menu(couriers, products, orders)
 
+
+
+
+load_dotenv()
+host_name = os.environ.get("POSTGRES_HOST")
+database_name = os.environ.get("POSTGRES_DB")
+user_name = os.environ.get("POSTGRES_USER")
+user_password = os.environ.get("POSTGRES_PASSWORD")
+conn_string = f'host={host_name} dbname={database_name} user={user_name} password={user_password}'
+
+try:
+    with psycopg2.connect(conn_string) as connection:
+
+        # print('Opening cursor...')
+        cursor = connection.cursor()
+except:
+    print("WARNING - Failed to connect to database ")
+
+def insert_order(new_customer_name, new_customer_address, new_customer_phone, new_order_product, new_order_courier):
+    cursor = connection.cursor()
+    insert = '''
+    INSERT INTO orders (customer_name, customer_address, customer_phone, courier_id, status_id, products_id)
+    VALUES (%s,%s,%s,%s,1,%s)
+    '''
+
+    cursor.execute(insert, (new_customer_name, new_customer_address, new_customer_phone, new_order_courier,new_order_product))
+    connection.commit()
+
+    cursor.close()
