@@ -37,6 +37,13 @@ try:
     cursor.execute(sql)
 
     cursor.execute('''
+                create table if not exists status (
+                status_id serial primary key,
+                order_status text not null
+                )
+                ''')
+
+    cursor.execute('''
                 create table if not exists orders (
                 order_id serial primary key,
                 customer_name text not null,
@@ -48,12 +55,7 @@ try:
                 )
                 ''')
     
-    cursor.execute('''
-                create table if not exists status (
-                status_id serial primary key,
-                order_status text not null,
-                )
-                ''')
+    
 
     connection.commit()
 
@@ -82,13 +84,12 @@ def dummy_values_load():
         ('Latte', '2.49'),
         ('Hot Chocolate', '3.99');
 
-        INSERT INTO status (oreder_status) VALUES
+        INSERT INTO status (order_status) VALUES
         ('pending'),
         ('order received'),
         ('preparing'),
         ('on the way'),
-        ('delivered'):
-                   
+        ('delivered');
     """)
 
     
