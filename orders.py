@@ -1,6 +1,8 @@
 import csv
 from couriers import load_couriers
 #from products import load_products
+from db import get_connection
+
 
 FIELDNAMES = ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']
 STATUSES = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
@@ -116,18 +118,38 @@ def save_orders(order_list):
         print(f'Unable to save orders: {error}')
 
 # change
-def print_order_list(order_list):
-    if not order_list:
-        print("WARNING - Order list is empty returning back to menu")
-    else:
-        for i, order in enumerate(order_list):
-            print(f"{i}: Customer: {order.get('customer_name', '')}, "
-                  f"Address: {order.get('customer_address', '')}, "
-                  f"Phone: {order.get('customer_phone', '')}, "
-                  f"Courier: {order.get('courier', '')}, "
-                  f"Status: {order.get('status', '')}, "
-                  f"Items: {order.get('items', '')}")
+# def print_order_list(order_list):
+#     if not order_list:
+#         print("WARNING - Order list is empty returning back to menu")
+#     else:
+#         for i, order in enumerate(order_list):
+#             print(f"{i}: Customer: {order.get('customer_name', '')}, "
+#                   f"Address: {order.get('customer_address', '')}, "
+#                   f"Phone: {order.get('customer_phone', '')}, "
+#                   f"Courier: {order.get('courier', '')}, "
+#                   f"Status: {order.get('status', '')}, "
+#                   f"Items: {order.get('items', '')}")
 
+def print_orders():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT * FROM orders
+                    ORDER BY order_id ASC        
+                """)
+
+                orders = cur.fetchall()
+                if orders:
+                    for order in orders:
+                        print(order)
+                else:
+                    print(f'No orders')
+
+    except Exception as e:
+        print(f'Error: {e}')
+
+print_orders()
 
 # change
 def add_order(order_list, couriers, products):
@@ -221,22 +243,36 @@ def update_order_details(order_list, couriers, products):
     return False
 
 # change
-def delete_order(order_list):
-    if not order_list:
-        print('No orders available to delete.')
-        return False
-    print_order_list(order_list)
-    try:
-        index = int(input('Select order index to delete: '))
-        if 0 <= index < len(order_list):
-            order_list.pop(index)
-            print('Order deleted!')
-            return True
-        print('Invalid index')
-    except ValueError:
-        print('Invalid input')
-    return False
+# def delete_order(order_list):
+#     if not order_list:
+#         print('No orders available to delete.')
+#         return False
+#     print_order_list(order_list)
+#     try:
+#         index = int(input('Select order index to delete: '))
+#         if 0 <= index < len(order_list):
+#             order_list.pop(index)
+#             print('Order deleted!')
+#             return True
+#         print('Invalid index')
+#     except ValueError:
+#         print('Invalid input')
+#     return False
 
+def delete_order():
+    print_orders()
+    delete_id = input("Enter the id of the order to delete: ")
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                sql = """DELETE FROM orders
+                WHERE order_id = %s"""
+            
+                cur.execute(sql, (delete_id,))
+                print("Order deleted")
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 # change
 def order_menu(couriers, products, order_list):
