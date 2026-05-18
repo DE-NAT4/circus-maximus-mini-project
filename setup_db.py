@@ -36,6 +36,25 @@ try:
 
     cursor.execute(sql)
 
+    cursor.execute('''
+                create table if not exists orders (
+                order_id serial primary key,
+                customer_name text not null,
+                customer_address text not null,
+                customer_phone integer not null,
+                courier_id integer references couriers(courier_id),
+                status_id integer not null REFERENCES status(status_id),
+                products_id integer not null references products(product_id)
+                )
+                ''')
+    
+    cursor.execute('''
+                create table if not exists status (
+                status_id serial primary key,
+                order_status text not null,
+                )
+                ''')
+
     connection.commit()
 
     print("Tables created successfully!")
@@ -61,7 +80,15 @@ def dummy_values_load():
         INSERT INTO products (product_name, product_price) VALUES
         ('Mocha', '1.99'),
         ('Latte', '2.49'),
-        ('Hot Chocolate', '3.99');        
+        ('Hot Chocolate', '3.99');
+
+        INSERT INTO status (oreder_status) VALUES
+        ('pending'),
+        ('order received'),
+        ('preparing'),
+        ('on the way'),
+        ('delivered'):
+                   
     """)
 
     
