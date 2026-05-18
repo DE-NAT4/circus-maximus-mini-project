@@ -1,6 +1,6 @@
 import csv
 from couriers import load_couriers
-from products import load_products
+#from products import load_products
 
 FIELDNAMES = ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']
 STATUSES = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
@@ -17,53 +17,54 @@ def print_order_menu():
     print('| \t\t\t\t|')
     print('--------------------------------')
 
-def read_orders_csv():
-    try:
-        with open('Orders.csv', 'r') as file:
-            reader = csv.DictReader(file, skipinitialspace=True)
-            if reader.fieldnames:
-                reader.fieldnames = [name.strip() for name in reader.fieldnames if name]
-            return [row for row in reader if any((value or '').strip() for value in row.values())]
-    except FileNotFoundError:
-        return []
-    except Exception as error:
-        print(f'Error reading Orders.csv: {error}')
-        return []
+# delete
+# def read_orders_csv():
+#     try:
+#         with open('Orders.csv', 'r') as file:
+#             reader = csv.DictReader(file, skipinitialspace=True)
+#             if reader.fieldnames:
+#                 reader.fieldnames = [name.strip() for name in reader.fieldnames if name]
+#             return [row for row in reader if any((value or '').strip() for value in row.values())]
+#     except FileNotFoundError:
+#         return []
+#     except Exception as error:
+#         print(f'Error reading Orders.csv: {error}')
+#         return []
 
+# # delete
+# def normalize_order(order, couriers, products):
+#     # Normalize courier: if it's an index, convert to name
+#     try:
+#         courier_index = int(order.get('courier', ''))
+#         if 0 <= courier_index < len(couriers):
+#             order['courier'] = couriers[courier_index]['name']
+#     except (ValueError, TypeError):
+#         pass  # Keep as is if not index
 
-def normalize_order(order, couriers, products):
-    # Normalize courier: if it's an index, convert to name
-    try:
-        courier_index = int(order.get('courier', ''))
-        if 0 <= courier_index < len(couriers):
-            order['courier'] = couriers[courier_index]['name']
-    except (ValueError, TypeError):
-        pass  # Keep as is if not index
+#     # Normalize items: if comma-separated indices, convert to names
+#     items_str = order.get('items', '')
+#     if items_str:
+#         try:
+#             indices = [int(x.strip()) for x in items_str.split(',') if x.strip()]
+#             names = []
+#             for idx in indices:
+#                 if 0 <= idx < len(products):
+#                     names.append(products[idx]['Name'])
+#             if names:
+#                 order['items'] = ', '.join(names)
+#         except (ValueError, TypeError):
+#             pass  # Keep as is
 
-    # Normalize items: if comma-separated indices, convert to names
-    items_str = order.get('items', '')
-    if items_str:
-        try:
-            indices = [int(x.strip()) for x in items_str.split(',') if x.strip()]
-            names = []
-            for idx in indices:
-                if 0 <= idx < len(products):
-                    names.append(products[idx]['Name'])
-            if names:
-                order['items'] = ', '.join(names)
-        except (ValueError, TypeError):
-            pass  # Keep as is
+#     return order
 
-    return order
+# #delete
+# def parse_index_list(raw_input):
+#     try:
+#         return [int(x.strip()) for x in raw_input.split(',') if x.strip()]
+#     except ValueError:
+#         return []
 
-
-def parse_index_list(raw_input):
-    try:
-        return [int(x.strip()) for x in raw_input.split(',') if x.strip()]
-    except ValueError:
-        return []
-
-
+# change
 def choose_courier(couriers):
     if not couriers:
         return input('Enter courier name: ').strip()
@@ -79,7 +80,7 @@ def choose_courier(couriers):
     print('Invalid courier index, leaving blank.')
     return ''
 
-
+# change
 def choose_products(products):
     if not products:
         return input('Enter items (comma-separated): ').strip()
@@ -97,11 +98,11 @@ def choose_products(products):
         )
     return raw_items
 
-
+# delete
 def load_orders(couriers, products):
     return [normalize_order(order, couriers, products) for order in read_orders_csv()]
 
-
+# keep?
 def save_orders(order_list):
     if not order_list:
         return
@@ -114,6 +115,7 @@ def save_orders(order_list):
     except Exception as error:
         print(f'Unable to save orders: {error}')
 
+# change
 def print_order_list(order_list):
     if not order_list:
         print("WARNING - Order list is empty returning back to menu")
@@ -127,7 +129,7 @@ def print_order_list(order_list):
                   f"Items: {order.get('items', '')}")
 
 
-
+# change
 def add_order(order_list, couriers, products):
     customer_name = input('What is the new customer\'s name? ')
     customer_address = input('What is the address of the customer? ')
@@ -157,7 +159,7 @@ def add_order(order_list, couriers, products):
     print('Order added to list')
     return True
 
-
+# change
 def update_order_status(order_list):
     if not order_list:
         print('No orders available to update.')
@@ -178,7 +180,7 @@ def update_order_status(order_list):
         print('Please enter a valid number.')
     return False
 
-
+# change
 def update_order_details(order_list, couriers, products):
     if not order_list:
         print('No orders available to update.')
@@ -218,7 +220,7 @@ def update_order_details(order_list, couriers, products):
         print('Invalid input.')
     return False
 
-
+# change
 def delete_order(order_list):
     if not order_list:
         print('No orders available to delete.')
@@ -236,7 +238,7 @@ def delete_order(order_list):
     return False
 
 
-
+# change
 def order_menu(couriers, products, order_list):
     while True:
         print_order_menu()
@@ -257,9 +259,9 @@ def order_menu(couriers, products, order_list):
             print('Invalid input')
 
 
-if __name__ == "__main__":
-    couriers = load_couriers()
-    products = load_products()
-    orders = load_orders(couriers, products)
-    order_menu(couriers, products, orders)
+# if __name__ == "__main__":
+#     couriers = load_couriers()
+#     #products = load_products()
+#     orders = load_orders(couriers, products)
+#     order_menu(couriers, products, orders)
 

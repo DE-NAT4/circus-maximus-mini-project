@@ -3,7 +3,7 @@ import products
 import couriers
 
 
-courier_list = couriers.load_couriers()
+#courier_list = couriers.load_couriers()
 
 def print_main_menu():
     print(" ------ Main Menu ------")
@@ -32,8 +32,8 @@ while True:
     if user_input == "0":
         saveconf = input("Do you want to save your changes y/n: ")
         if saveconf == "y":
-            couriers.save_couriers(courier_list)
-            products.save_products(products_list)
+            #couriers.save_couriers(courier_list)
+            #products.save_products(products_list)
             print("Saving and Exiting app...")
             exit()
             break
@@ -53,7 +53,7 @@ while True:
         couriers.courier_menu()
         
     elif user_input == "3":
-        orders.order_menu(courier_list, products_list, order_list)
+        orders.order_menu()
         # print(orders.__file__)
         # print(dir(orders))
 
