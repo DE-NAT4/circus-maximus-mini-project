@@ -132,7 +132,8 @@ def print_courier_list():
 
                 couriers = cur.fetchall()
                 if couriers:
-                    print(couriers)
+                    for courier in couriers:
+                        print(courier)
                 else:
                     print(f'No Couriers')
 
@@ -155,6 +156,7 @@ def print_courier(courier_id):
 
                 else:
                     print("Courier doesn't exist")
+                    
 
     except Exception as e:
         print(f'Error: {e}')
