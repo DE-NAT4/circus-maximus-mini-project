@@ -172,7 +172,7 @@ def add_order():
             new_customer_phone = int(input('What is the phone number of the customer? '))
             retrieve_products()
             #NEEDS TO BE CHANGED TO WORK WITH STRINGS
-            new_order_product = int(input("Please select your products using the ID "))
+            new_order_product = (input("Please select your products using the ID comma seperated: "))
             print_courier_list()
             new_order_courier =  int(input("Please choose your courier using the ID "))
             insert_order(new_customer_name, new_customer_address, new_customer_phone, new_order_product, new_order_courier)
