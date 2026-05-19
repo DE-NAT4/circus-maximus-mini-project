@@ -41,6 +41,15 @@ try:
 
     cursor.execute(sql)
 
+
+    
+    cursor.execute('''
+                create table if not exists status (
+                status_id serial primary key,
+                order_status text not null,
+                )
+                ''')
+
     cursor.execute('''
                 create table if not exists status (
                 status_id serial primary key,
@@ -56,11 +65,9 @@ try:
                 customer_phone VARCHAR(20) not null,
                 courier_id integer references couriers(courier_id),
                 status_id integer not null REFERENCES status(status_id),
-                products_id integer not null references products(product_id)
+                products_id text not null
                 )
                 ''')
-    
-    
 
     connection.commit()
 
