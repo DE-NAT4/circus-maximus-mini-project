@@ -1,17 +1,18 @@
 import csv
+from select import select
 from couriers import load_couriers
-#from products import load_products
+from products import retrieve_products
 from db import get_connection
 
 
-FIELDNAMES = ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']
-STATUSES = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
+#FIELDNAMES = ['customer_name', 'customer_address', 'customer_phone', 'courier', 'status', 'items']
+#STATUSES = ['Pending', 'order received', 'preparing', 'On the way', 'delivered']
 
 def print_order_menu():
     print('\n ---------- Order Menu ---------')
     print('|\t\t\t\t|')
-    print('| 1. Print Order Dictionary\t|')
-    print('| 2. Add Order to Dictionary\t|')
+    print('| 1. Print Order Table\t|')
+    print('| 2. Add Order to Table\t|')
     print("| 3. Update an Order's Status\t|")
     print("| 4. Update an Order's Details\t|")
     print('| 5. Delete an Order\t\t|')
@@ -67,22 +68,30 @@ def print_order_menu():
 #         return []
 
 # change
-def choose_courier(couriers):
+def choose_courier():
+    couriers = load_couriers()
     if not couriers:
-        return input('Enter courier name: ').strip()
-    print('Choose a courier index:')
+        return "No couriers available, please add a courier first."
+
+    print('Choose a courier:')
     for i, courier in enumerate(couriers):
-        print(f'{i}: {courier.get("name", "Unnamed courier")}')
+        print(f'{i}: {courier.get("name", "Unnamed courier")} ({courier.get("phone", "")})')
     try:
-        index = int(input('Enter courier index: '))
-        if 0 <= index < len(couriers):
-            return couriers[index]['name']
+        choice = int(input('Enter courier index: ').strip())
     except ValueError:
-        pass
-    print('Invalid courier index, leaving blank.')
-    return ''
+        return None
+    if 0 <= choice < len(couriers):
+        return couriers[choice]
+    return None
 
 # change
+def parse_index_list(raw_input):
+    try:
+        return [int(x.strip()) for x in raw_input.split(',') if x.strip()]
+    except Exception:
+        return []
+
+
 def choose_products(products):
     if not products:
         return input('Enter items (comma-separated): ').strip()
@@ -101,8 +110,8 @@ def choose_products(products):
     return raw_items
 
 # delete
-def load_orders(couriers, products):
-    return [normalize_order(order, couriers, products) for order in read_orders_csv()]
+# def load_orders(couriers, products):
+#     return [normalize_order(order, couriers, products) for order in read_orders_csv()]
 
 # keep?
 def save_orders(order_list):
@@ -151,6 +160,42 @@ def print_orders():
 
 print_orders()
 
+def update_order_status():
+    try:
+        with get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT order_id, status FROM orders
+                    ORDER BY order_id ASC        
+                """)
+                orders = cur.fetchall()
+                if not orders:
+                    print('No orders available to update.')
+                    return False
+                for order in orders:
+                    print(f'{order[0]}: {order[1]}')
+                order_id = input('Enter the order ID to update: ')
+                print('Choose new status:')
+                cur.excute("""
+                           SELECT DISTINCT status FROM status 
+                           """)
+                statuses = cur.fetchall()
+                status_index = int(input('Enter status index: '))
+                if 0 <= status_index < len(statuses):
+                    new_status = statuses[status_index][0]
+                    cur.execute("""
+                        UPDATE orders
+                        SET status = %s
+                        WHERE order_id = %s
+                    """, (new_status, order_id))
+                    print('Order status updated successfully.')
+                    return True
+                else:
+                    print('Invalid status index.')
+    except ValueError:
+        print('Please enter a valid number.')
+    return False
+
 # change
 def add_order(order_list, couriers, products):
     customer_name = input('What is the new customer\'s name? ')
@@ -182,25 +227,7 @@ def add_order(order_list, couriers, products):
     return True
 
 # change
-def update_order_status(order_list):
-    if not order_list:
-        print('No orders available to update.')
-        return False
-    print_order_list(order_list)
-    try:
-        order_index = int(input('Enter the order index to update: '))
-        if 0 <= order_index < len(order_list):
-            for i, status in enumerate(STATUSES):
-                print(f'{i}: {status}')
-            status_index = int(input('Enter the status index: '))
-            if 0 <= status_index < len(STATUSES):
-                order_list[order_index]['status'] = STATUSES[status_index]
-                print('Order status updated successfully.')
-                return True
-        print('Invalid order or status index.')
-    except ValueError:
-        print('Please enter a valid number.')
-    return False
+
 
 # change
 def update_order_details(order_list, couriers, products):
