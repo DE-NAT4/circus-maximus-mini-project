@@ -172,7 +172,7 @@ def update_order_status():
         with get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute("""
-                    SELECT order_id, status FROM orders
+                    SELECT * FROM orders
                     ORDER BY order_id ASC        
                 """)
                 orders = cur.fetchall()
@@ -180,10 +180,10 @@ def update_order_status():
                     print('No orders available to update.')
                     return False
                 for order in orders:
-                    print(f'{order[0]}: {order[1]}')
+                    print(order)
                 order_id = input('Enter the order ID to update: ')
                 print('Choose new status:')
-                cur.excute("""
+                cur.execute("""
                            SELECT DISTINCT status FROM status 
                            """)
                 statuses = cur.fetchall()
@@ -192,9 +192,9 @@ def update_order_status():
                     new_status = statuses[status_index][0]
                     cur.execute("""
                         UPDATE orders
-                        SET status = %s
+                        SET status_id = %s
                         WHERE order_id = %s
-                    """, (new_status, order_id))
+                    """, (status_index, order_id))
                     print('Order status updated successfully.')
                     return True
                 else:
@@ -333,17 +333,16 @@ def order_menu():
         choice = input('Please select an option: ')
         if choice == '0':
             break
-        # elif choice == '1':
-        #     print_order_list(order_list)
+        elif choice == '1':
+             print_orders()
         elif choice == '2':
-            # add_order(order_list, couriers, products)
             add_order()
-        # elif choice == '3':
-        #     update_order_status(order_list)
+        elif choice == '3':
+            update_order_status()
         # elif choice == '4':
         #     update_order_details(order_list, couriers, products)
-        # elif choice == '5':
-        #     delete_order(order_list)
+        elif choice == '5':
+            delete_order()
         else:
             print('Invalid input')
 
