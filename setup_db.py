@@ -1,3 +1,8 @@
+'''
+Before running the application for the first time, run this file (setup_db.py) ONCE to set up tables and load dummy data
+!!!Drop your existing tables first if you run into foreign key issues with the order_dummy_values_load() function!!!
+'''
+
 from db import get_connection
 
 try:
@@ -46,11 +51,18 @@ try:
                 ''')
 
     cursor.execute('''
+                create table if not exists status (
+                status_id serial primary key,
+                order_status text not null
+                )
+                ''')
+
+    cursor.execute('''
                 create table if not exists orders (
                 order_id serial primary key,
                 customer_name text not null,
                 customer_address text not null,
-                customer_phone integer not null,
+                customer_phone VARCHAR(20) not null,
                 courier_id integer references couriers(courier_id),
                 status_id integer not null REFERENCES status(status_id),
                 products_id text not null
@@ -89,8 +101,7 @@ def dummy_values_load():
         ('order received'),
         ('preparing'),
         ('on the way'),
-        ('delivered'):
-                   
+        ('delivered');        
     """)
 
     
@@ -101,3 +112,23 @@ def dummy_values_load():
     print("Dummy Values loaded")
 
 dummy_values_load()
+
+def order_dummy_values_load():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        INSERT INTO orders (customer_name, customer_address, customer_phone, courier_id, status_id, products_id) VALUES
+        ('John Doe', '123 Main St', '07123456', 1, 1, 1),
+        ('Jane Smith', '456 Elm St', '5555678', 2, 3, 2),
+        ('Bob Johnson', '789 Oak St', '5559012', 3, 2, 3);        
+    """)
+
+    
+
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Order Dummy Values loaded")
+
+order_dummy_values_load()
