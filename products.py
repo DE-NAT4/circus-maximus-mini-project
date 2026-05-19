@@ -146,8 +146,8 @@ def retrieve_products():
     #Next two lines gets the column names puts them in a list and prints them
     field_name = [desc[0] for desc in cursor.description]
     print(field_name)
-    for product_row in products:
-        print(product_row)
+    for product_id, product_name, product_price in products:
+        print(product_id, product_name, product_price)
     cursor.close()
 
 #Retrieves a single product from a selected ID and prints it
