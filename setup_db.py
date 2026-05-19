@@ -54,9 +54,9 @@ try:
                 customer_name text not null,
                 customer_address text not null,
                 customer_phone VARCHAR(20) not null,
-                courier_id integer references couriers(courier_id),
+                courier_id integer REFERENCES couriers(courier_id),
                 status_id integer not null REFERENCES status(status_id),
-                products_id integer not null references products(product_id)
+                products_id text not null 
                 )
                 ''')
     
@@ -112,9 +112,9 @@ def order_dummy_values_load():
 
     cur.execute("""
         INSERT INTO orders (customer_name, customer_address, customer_phone, courier_id, status_id, products_id) VALUES
-        ('John Doe', '123 Main St', '07123456', 1, 1, 1),
-        ('Jane Smith', '456 Elm St', '5555678', 2, 3, 2),
-        ('Bob Johnson', '789 Oak St', '5559012', 3, 2, 3);        
+        ('John Doe', '123 Main St', '07123456', 1, 1, '1, 2, 3'),
+        ('Jane Smith', '456 Elm St', '5555678', 2, 3, '2'),
+        ('Bob Johnson', '789 Oak St', '5559012', 3, 2, '1, 3');        
     """)
 
     

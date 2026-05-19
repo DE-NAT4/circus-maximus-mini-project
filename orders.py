@@ -274,6 +274,8 @@ def delete_order():
     except Exception as e:
         print(f"Error: {e}")
 
+
+
 # change
 def order_menu(couriers, products, order_list):
     while True:
@@ -282,7 +284,7 @@ def order_menu(couriers, products, order_list):
         if choice == '0':
             break
         elif choice == '1':
-            print_order_list(order_list)
+            print_orders()
         elif choice == '2':
             add_order(order_list, couriers, products)
         elif choice == '3':
@@ -290,7 +292,7 @@ def order_menu(couriers, products, order_list):
         elif choice == '4':
             update_order_details(order_list, couriers, products)
         elif choice == '5':
-            delete_order(order_list)
+            delete_order()
         else:
             print('Invalid input')
 
