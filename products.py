@@ -56,26 +56,29 @@ def product_menu():
                         try:
                             retrieve_products()
                             select_id = (input("Please select an id to update "))
-                            print("Product selected: ")
-                            retrieve_product(select_id)
-                            upd_name = input("Please select a new name - Leave blank to keep ")
-                            if upd_name != "":
-                                product_name = upd_name
-                                if check_product_exists(product_name) == False:
-                                    update_products_name(select_id, upd_name)
-                                    pass
-                                else:
-                                    break
-                            else:
-                                pass
-                            
-                                upd_price = (input("Please select a new price - Leave blank to keep "))
-                                if upd_price != "":
-                                    update_product_price(select_id, upd_price)
-                                    pass 
-                                else:
-                                    pass
+                            if retrieve_product(select_id) == False:
                                 break
+                            else:
+                                print("Product selected: ")
+                                retrieve_product(select_id)
+                                upd_name = input("Please select a new name - Leave blank to keep ")
+                                if upd_name != "":
+                                    product_name = upd_name
+                                    if check_product_exists(product_name) == False:
+                                        update_products_name(select_id, upd_name)
+                                        pass
+                                    else:
+                                        break
+                                else:
+                                    pass
+                                
+                                    upd_price = (input("Please select a new price - Leave blank to keep "))
+                                    if upd_price != "":
+                                        update_product_price(select_id, upd_price)
+                                        pass 
+                                    else:
+                                        pass
+                                    break
                         except:
                             print("Invalid Input ")
                             cursor.close()
@@ -156,8 +159,14 @@ def retrieve_product(select_id):
     product_pull = '''SELECT * FROM products
     WHERE product_id = %s'''
     cursor.execute(product_pull, select_id)
-    print(cursor.fetchall())
-    cursor.close()
+    product_id_check = cursor.fetchone()
+    if product_id_check == None:
+        print("Product does not exist ")
+        cursor.close()
+        return False
+    else:
+        print(product_id_check)
+        cursor.close()
 
         
 # Updates the name of a product based off of ID
