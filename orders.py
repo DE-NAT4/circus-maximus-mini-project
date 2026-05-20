@@ -162,7 +162,6 @@ def print_orders():
     except Exception as e:
         print(f'Error: {e}')
 
-# print_orders()
 
 def update_order_status():
     try:
@@ -247,10 +246,7 @@ def add_order():
             print("Invalid Input")
             cursor.close()
             break
-# change
 
-
-# change
 
 # change
 # def delete_order(order_list):
@@ -299,8 +295,8 @@ def order_menu():
             add_order()
         elif choice == '3':
             update_order_status()
-        # elif choice == '4':
-        #     update_order_details(order_list, couriers, products)
+        elif choice == '4':
+            update_order()
         elif choice == '5':
             delete_order()
         else:
@@ -342,3 +338,163 @@ def insert_order(new_customer_name, new_customer_address, new_customer_phone, ne
     connection.commit()
 
     cursor.close()
+
+
+def update_order():
+
+    # SHOW EXISTING ORDERS
+    print_orders()
+
+    order_id = input(
+        "Enter order ID to update: "
+    )
+
+    try:
+
+        with get_connection() as conn:
+
+            with conn.cursor() as cur:
+
+                # =========================
+                # GET CURRENT ORDER
+                # =========================
+
+                sql = """
+                    SELECT
+                        customer_name,
+                        customer_address,
+                        customer_phone,
+                        courier_id,
+                        products_id
+                    FROM orders
+                    WHERE order_id = %s;
+                """
+
+                cur.execute(sql, (order_id,))
+
+                order = cur.fetchone()
+
+                # CHECK ORDER EXISTS
+                if not order:
+                    print("Order not found!")
+                    return
+
+                # =========================
+                # STORE CURRENT VALUES
+                # =========================
+
+                current_name = order[0]
+                current_address = order[1]
+                current_phone = order[2]
+                current_courier = order[3]
+                current_items = order[4]
+
+                # =========================
+                # USER INPUTS
+                # =========================
+
+                new_name = input(
+                    f"Customer name ({current_name}): "
+                )
+
+                new_address = input(
+                    f"Customer address ({current_address}): "
+                )
+
+                new_phone = input(
+                    f"Customer phone ({current_phone}): "
+                )
+
+                # =========================
+                # SHOW PRODUCTS
+                # =========================
+
+                print("\nAVAILABLE PRODUCTS\n")
+
+                cur.execute("""
+                    SELECT product_id, product_name, product_price
+                    FROM products
+                    ORDER BY product_id;
+                """)
+
+                products = cur.fetchall()
+
+                for product in products:
+                    print(product)
+
+                new_items = input(
+                    f"Product IDs ({current_items}): "
+                )
+
+                # =========================
+                # SHOW COURIERS
+                # =========================
+
+                print("\nAVAILABLE COURIERS\n")
+
+                cur.execute("""
+                    SELECT courier_id, courier_name, courier_phone
+                    FROM couriers
+                    ORDER BY courier_id;
+                """)
+
+                couriers = cur.fetchall()
+
+                for courier in couriers:
+                    print(courier)
+
+                new_courier = input(
+                    f"Courier ID ({current_courier}): "
+                )
+
+                # =========================
+                # KEEP OLD VALUES IF EMPTY
+                # =========================
+
+                if new_name == "":
+                    new_name = current_name
+
+                if new_address == "":
+                    new_address = current_address
+
+                if new_phone == "":
+                    new_phone = current_phone
+
+                if new_items == "":
+                    new_items = current_items
+
+                if new_courier == "":
+                    new_courier = current_courier
+
+                # =========================
+                # UPDATE DATABASE
+                # =========================
+
+                update_sql = """
+                    UPDATE orders
+                    SET customer_name = %s,
+                        customer_address = %s,
+                        customer_phone = %s,
+                        courier_id = %s,
+                        products_id = %s
+                    WHERE order_id = %s;
+                """
+
+                cur.execute(
+                    update_sql,
+                    (
+                        new_name,
+                        new_address,
+                        new_phone,
+                        new_courier,
+                        new_items,
+                        order_id
+                    )
+                )
+
+                conn.commit()
+
+                print("Order updated!")
+
+    except Exception as e:
+        print(f"Error: {e}")
