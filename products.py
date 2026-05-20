@@ -214,3 +214,28 @@ def check_product_exists(product_name):
     else:
         print("Adding Product")
         return False
+    
+
+    ####################################################################################
+    # Exporting to csv
+def export_products_csv():
+    try:
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM products')
+        products = (cursor.fetchall())
+        headers = ["product_id","product_name","product_price"]
+    # Dict converts the tuple to take the headers as keys and products as values. zip binds these values
+        products_conv = [ dict(zip(headers, product))
+        for product in products ]
+     #Save products back to Products.csv file
+        with open('Products.csv', 'w', newline="") as file:
+            
+            
+            f = csv.DictWriter(file, fieldnames=headers)
+            f.writeheader()
+            f.writerows(products_conv)
+
+            cursor.close()
+    except Exception as e:
+        print(f"Error exporting products: {e}")
+        cursor.close()

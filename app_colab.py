@@ -30,8 +30,9 @@ while True:
     user_input = input("Enter option: ")
 
     if user_input == "0":
-        saveconf = input("Do you want to save your changes y/n: ")
+        saveconf = input("Do you want to export your changes y/n: ")
         if saveconf == "y":
+            products.export_products_csv()
             #couriers.save_couriers(courier_list)
             #products.save_products(products_list)
             print("Saving and Exiting app...")
