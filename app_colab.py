@@ -34,6 +34,7 @@ while True:
         if saveconf == "y":
             #couriers.save_couriers(courier_list)
             #products.save_products(products_list)
+            save_orders(order_list)
             print("Saving and Exiting app...")
             exit()
             break
