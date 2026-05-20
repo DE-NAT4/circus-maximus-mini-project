@@ -55,13 +55,12 @@ def product_menu():
                         #MISSING ERROR HANDLING
                         try:
                             retrieve_products()
-                            select_id = (input("Please select an id to update "))
+                            select_id = (input("Please select an id to update: "))
                             if retrieve_product(select_id) == False:
                                 break
                             else:
-                                print("Product selected: ")
-                                retrieve_product(select_id)
-                                upd_name = input("Please select a new name - Leave blank to keep ")
+                                print("Product selected ")
+                                upd_name = input("Please select a new name - Leave blank to keep: ")
                                 if upd_name != "":
                                     product_name = upd_name
                                     if check_product_exists(product_name) == False:
@@ -72,7 +71,7 @@ def product_menu():
                                 else:
                                     pass
                                 
-                                    upd_price = (input("Please select a new price - Leave blank to keep "))
+                                    upd_price = (input("Please select a new price - Leave blank to keep: "))
                                     if upd_price != "":
                                         update_product_price(select_id, upd_price)
                                         pass 
@@ -89,7 +88,7 @@ def product_menu():
                     while True:
                         try:
                             retrieve_products()
-                            delete_id = (input("please select the ID of what you want to delete "))
+                            delete_id = (input("Please select the ID of what you want to delete: "))
                             delete_product(delete_id)
                             break
                         except:
@@ -100,13 +99,6 @@ def product_menu():
 
 ####################################################################
 #Database code - Some will be replaced when merged
-#WARNING UNTIL MAIN DATABASE IS MADE A TEMPORARY TABLE IS NEEDED below is the code needed to test this
-# CREATE TABLE products (
-#     product_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-#     product_name VARCHAR(255),
-#     product_price FLOAT
-# );
-
 
 
 # Connects to the database and gets all details from .env
@@ -165,7 +157,8 @@ def retrieve_product(select_id):
         cursor.close()
         return False
     else:
-        print(product_id_check)
+        product_id, product_name, product_price = product_id_check
+        print(product_id, product_name, product_price)
         cursor.close()
 
         
