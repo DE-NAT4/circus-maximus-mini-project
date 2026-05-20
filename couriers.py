@@ -1,73 +1,6 @@
 import csv
 from db import get_connection
 
-#######################################
-# TEST: DATABASE CREATION AND CONNECTION
-# delete later
-
-# load_dotenv()
-
-# def get_connection():
-#     return psycopg2.connect(
-#         host=os.getenv("POSTGRES_HOST"),
-#         port=os.getenv("DB_PORT"),
-#         database=os.getenv("POSTGRES_DB"),
-#         user=os.getenv("POSTGRES_USER"),
-#         password=os.getenv("POSTGRES_PASSWORD")
-#     )
-
-# def check_database():
-#     try:
-#         with get_connection() as conn:
-#             print("Connection successful!")
-
-#     except Exception as e:
-#         print(f"Connection failed: {e}")
-
-# check_database()
-
-# def create_tables():
-#     conn = get_connection() # Call the get_connection() function
-#     cur = conn.cursor() # Call the cursor method against the 'conn' object
-
-#     # Create a table using the cursor's execute method
-#     cur.execute("""
-#         CREATE TABLE IF NOT EXISTS couriers (
-#             courier_id SERIAL PRIMARY KEY,
-#             name TEXT NOT NULL,
-#             phone TEXT NOT NULL
-#         );
-#     """)
-    
-#     conn.commit() # Commit changes to DB
-#     cur.close() # Close cursor
-#     conn.close() # Close connection
-#     print("Table created successfully!")
-    
-# #create_tables() # Call function    
-
-# def dummy_values_load():
-#     conn = get_connection()
-#     cur = conn.cursor()
-
-#     cur.execute("""
-#         INSERT INTO couriers (name, phone) VALUES
-#         ('Alice Johnson', '07123456789'),
-#         ('Bob Smith', '07234567890'),
-#         ('Charlie Brown', '07345678901');
-#     """)
-
-#     conn.commit()
-#     cur.close()
-#     conn.close()
-#     print("Dummy Values loaded")
-
-#dummy_values_load()
-
-#########################################    
-
-
-
 def print_courier_menu():
     print("\n ----- Courier Menu -----")
     print("|\t\t\t|")
@@ -80,21 +13,34 @@ def print_courier_menu():
     print("------------------------")
 
 ######################################
-# Not needed anymore
+# Legacy CSV functions - no longer used
+# Data is now stored in the SQL database
 def load_couriers():
-    """Load couriers from couriers.txt file"""
+    """Load couriers from couriers.csv file"""
+
+    # Create empty list to store courier dictionaries
     couriers = []
+
     try:
+        # Open CSV file in read mode
         with open('couriers.csv', 'r', newline='') as csvfile:
+            
+            # Read CSV rows as dictionaries
             reader = csv.DictReader(csvfile)
+
+            # Loop through each row in the CSV file
             for row in reader:
+
+                # Create courier dictionary
                 courier = {
                     'name': row['name'],
                     'phone': row['phone']
                 }
 
+                # Add courier to list
                 couriers.append(courier)
-                
+
+    # Use default data if file does not exist            
     except FileNotFoundError:
         print("Courier not found. Using default couriers.")
         couriers = [
@@ -103,55 +49,92 @@ def load_couriers():
             {"name": "Mark",
              "phone": "072222222222"} 
         ]
+
     return couriers
 
 
+
+
 def save_couriers(couriers):
-    """Save couriers back to couriers.txt file"""
+    """Save couriers back to couriers.csv file"""
+
     try:
+        # Open CSV file in write mode
         with open('couriers.csv', 'w', newline='') as csvfile:
+
+            # Define CSV column names
             fieldnames = ['name', 'phone']
+
+            # Create CSV writer object
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
+             # Write header row
             writer.writeheader()
+
+            # Write each courier dictionary as a row
             for courier in couriers:
-                writer.writerow({'name': courier['name'], 'phone': courier['phone']})
+                writer.writerow({'name': courier['name'],
+                                 'phone': courier['phone']})
 
     except Exception as e:
         print(f"Error saving couriers: {e}")
+
 #########################################
 
+
+
+# Print all couriers stored in the database
 def print_courier_list():
+
     try:
+        # Open database connection
         with get_connection() as conn:
+            # Create cursor object
             with conn.cursor() as cur:
+
+                # SQL query to retrieve all couriers
                 cur.execute("""
                     SELECT * FROM couriers
                     ORDER BY courier_id ASC        
                 """)
 
+                # Fetch all rows from query result
                 couriers = cur.fetchall()
+
+                # Print couriers if records exist
                 if couriers:
-                    print(couriers)
+                    for courier in couriers:
+                        print(courier)
                 else:
                     print(f'No Couriers')
 
     except Exception as e:
         print(f'Error: {e}')
 
+
+
+# Print a single courier using courier ID
 def print_courier(courier_id):
+
     try:
         with get_connection() as conn:
             with conn.cursor() as cur:
+                
+                # SQL query to find courier by ID
                 sql = """
                 SELECT * FROM couriers
-                WHERE courier_id = %s"""
+                WHERE courier_id = %s
+                """
+
+                # Execute parameterised query
                 cur.execute(sql, (courier_id,))
 
+                # Fetch one matching record
                 courier = cur.fetchone()
 
+                # Print courier if found
                 if courier:
-                    print(courier)
+                    print(f"You've selected: {courier}")
 
                 else:
                     print("Courier doesn't exist")
@@ -159,102 +142,180 @@ def print_courier(courier_id):
     except Exception as e:
         print(f'Error: {e}')
 
+
+
+# Add a new courier to the database
 def add_courier():
-    # Ask user to enter a name and a phone number
+
+    # Ask user to enter courier details
     new_courier = input("Enter the name of courier: ")          
     new_courier_phone = input("Enter the phone number of courier: ")
+
     try: 
         with get_connection() as conn:
             with conn.cursor() as cur:
-                sql = "INSERT INTO couriers (courier_name, courier_phone) VALUES (%s, %s)"
+
+                # SQL INSERT statement
+                sql = """
+                INSERT INTO couriers (courier_name, courier_phone) 
+                VALUES (%s, %s)
+                """
+
+                # Execute query with user input
                 cur.execute(sql, (new_courier, new_courier_phone))
+
+                # Save changes to database
                 conn.commit()
 
     except Exception as e:
         print(f"Error: {e}")
 
+
+
+# Update courier name using courier ID
 def update_courier_name(id_choice, new_name):
+
     try: 
         with get_connection() as conn:
             with conn.cursor() as cur:
+                
+                # SQL UPDATE statement for courier name
                 sql = """
                 UPDATE couriers
                 SET courier_name = %s
                 WHERE courier_id = %s
                 """
+
+                # Execute query
                 cur.execute(sql, (new_name, id_choice))
+
+                # Save changes
                 conn.commit()
 
     except Exception as e:
         print(f"Error: {e}")
 
+
+
+# Update courier phone number using courier ID
 def update_courier_phone(id_choice, new_phone):
+
     try: 
         with get_connection() as conn:
             with conn.cursor() as cur:
+
+                # SQL UPDATE statement for courier phone
                 sql = """
                 UPDATE couriers
                 SET courier_phone = %s
                 WHERE courier_id = %s
                 """
+
+                # Execute query
                 cur.execute(sql, (new_phone, id_choice))
+
+                # Save changes
                 conn.commit()
 
     except Exception as e:
         print(f"Error: {e}")
 
+
+
+# Update courier details
 def update_courier():
+
+    # Display current courier list
     print_courier_list()
 
+    # Ask user which courier to update
     id_choice = input("Enter the id of a courier you want to update: ")
     
+    # Continue only if input is not blank
     if id_choice != "":
+
+        # Print selected courier
         print_courier(id_choice)
 
+        # Ask for updated name
         new_courier_name = input("Enter a new name (leave blank to keep old): ")
 
+        # Update name only if user entered a value
         if new_courier_name != "":
             update_courier_name(id_choice=id_choice, new_name=new_courier_name)
 
+        # Ask for updated phone number
         new_courier_phone = input("Enter a new phone number (leave blank to keep old): ")
 
+        # Update phone only if user entered a value
         if new_courier_phone != "":
             update_courier_phone(id_choice=id_choice, new_phone=new_courier_phone)
 
+
+
+# Remove a courier from the database
 def remove_courier():
+
+    # Display current couriers
     print_courier_list()
+
+    # Ask user which courier to delete
     delete_id = input("Enter the id of courier to delete: ")
+
     try:
         with get_connection() as conn:
             with conn.cursor() as cur:
-                sql = """DELETE FROM couriers
-                WHERE courier_id = %s"""
-            
+
+                # SQL DELETE statement
+                sql = """
+                DELETE FROM couriers
+                WHERE courier_id = %s
+                """
+
+                # Execute delete query
                 cur.execute(sql, (delete_id,))
+
+                # Save changes to database
+                conn.commit()
+
                 print("Courier deleted")
 
     except Exception as e:
         print(f"Error: {e}")
-    
+
+
+
+# Main courier menu loop
 def courier_menu():
+
     while True:
+
+        # Display menu options
         print_courier_menu()
+
+        # Ask user for menu option
         courier_choice = input("Enter Option: ")
 
+        # Return to main menu
         if courier_choice == "0":
             break
-
+        
+        # Print courier list
         elif courier_choice == "1":
             print_courier_list()
-            
+
+        # Add new courier    
         elif courier_choice == "2":
             add_courier()            
-            
+
+        # Update existing courier        
         elif courier_choice == "3":
             update_courier()
-            
+
+        # Delete courier    
         elif courier_choice == "4":
             remove_courier()
-
+        
+        # Handle invalid menu option
         else: 
             print ("Invalid Input")
