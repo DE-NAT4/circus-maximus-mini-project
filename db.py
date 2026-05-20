@@ -21,8 +21,6 @@ user_password = os.environ.get("POSTGRES_PASSWORD")
 
 def get_connection():
 
-    print("Opening connection...")
-
     connection = psycopg2.connect(
         host=host_name,
         dbname=database_name,
