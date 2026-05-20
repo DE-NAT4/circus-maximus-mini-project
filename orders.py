@@ -162,7 +162,7 @@ def print_orders():
     except Exception as e:
         print(f'Error: {e}')
 
-print_orders()
+# print_orders()
 
 def update_order_status():
     try:

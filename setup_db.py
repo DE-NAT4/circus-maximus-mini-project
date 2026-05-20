@@ -46,7 +46,7 @@ try:
     cursor.execute('''
                 create table if not exists status (
                 status_id serial primary key,
-                order_status text not null,
+                order_status text not null
                 )
                 ''')
 
