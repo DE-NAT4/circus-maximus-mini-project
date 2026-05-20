@@ -33,8 +33,7 @@ while True:
         saveconf = input("Do you want to export your changes y/n: ")
         if saveconf == "y":
             products.export_products_csv()
-            #couriers.save_couriers(courier_list)
-            #products.save_products(products_list)
+            couriers.export_courier_table_to_csv()
             print("Saving and Exiting app...")
             exit()
             break
