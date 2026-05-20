@@ -55,27 +55,29 @@ def product_menu():
                         #MISSING ERROR HANDLING
                         try:
                             retrieve_products()
-                            select_id = (input("Please select an id to update "))
-                            print("Product selected: ")
-                            retrieve_product(select_id)
-                            upd_name = input("Please select a new name - Leave blank to keep ")
-                            if upd_name != "":
-                                product_name = upd_name
-                                if check_product_exists(product_name) == False:
-                                    update_products_name(select_id, upd_name)
-                                    pass
-                                else:
-                                    break
-                            else:
-                                pass
-                            
-                                upd_price = (input("Please select a new price - Leave blank to keep "))
-                                if upd_price != "":
-                                    update_product_price(select_id, upd_price)
-                                    pass 
-                                else:
-                                    pass
+                            select_id = (input("Please select an id to update: "))
+                            if retrieve_product(select_id) == False:
                                 break
+                            else:
+                                print("Product selected ")
+                                upd_name = input("Please select a new name - Leave blank to keep: ")
+                                if upd_name != "":
+                                    product_name = upd_name
+                                    if check_product_exists(product_name) == False:
+                                        update_products_name(select_id, upd_name)
+                                        pass
+                                    else:
+                                        break
+                                else:
+                                    pass
+                                
+                                    upd_price = (input("Please select a new price - Leave blank to keep: "))
+                                    if upd_price != "":
+                                        update_product_price(select_id, upd_price)
+                                        pass 
+                                    else:
+                                        pass
+                                    break
                         except:
                             print("Invalid Input ")
                             cursor.close()
@@ -86,7 +88,7 @@ def product_menu():
                     while True:
                         try:
                             retrieve_products()
-                            delete_id = (input("please select the ID of what you want to delete "))
+                            delete_id = (input("Please select the ID of what you want to delete: "))
                             delete_product(delete_id)
                             break
                         except:
@@ -97,13 +99,6 @@ def product_menu():
 
 ####################################################################
 #Database code - Some will be replaced when merged
-#WARNING UNTIL MAIN DATABASE IS MADE A TEMPORARY TABLE IS NEEDED below is the code needed to test this
-# CREATE TABLE products (
-#     product_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-#     product_name VARCHAR(255),
-#     product_price FLOAT
-# );
-
 
 
 # Connects to the database and gets all details from .env
@@ -156,8 +151,15 @@ def retrieve_product(select_id):
     product_pull = '''SELECT * FROM products
     WHERE product_id = %s'''
     cursor.execute(product_pull, select_id)
-    print(cursor.fetchall())
-    cursor.close()
+    product_id_check = cursor.fetchone()
+    if product_id_check == None:
+        print("Product does not exist ")
+        cursor.close()
+        return False
+    else:
+        product_id, product_name, product_price = product_id_check
+        print(product_id, product_name, product_price)
+        cursor.close()
 
         
 # Updates the name of a product based off of ID
@@ -212,3 +214,27 @@ def check_product_exists(product_name):
     else:
         print("Adding Product")
         return False
+    
+
+    ####################################################################################
+    # Exporting to csv
+def export_products_csv():
+    try:
+        # Gets products
+        cursor = connection.cursor()
+        cursor.execute('SELECT * FROM products')
+        products = (cursor.fetchall())
+        headers = ["product_id","product_name","product_price"]
+    # Converts a tuple to a dict entry - Zip makes the header take the tuple returned as values dict then converts the tuple to a dict format of key:value
+        products_conv = [ dict(zip(headers, product))
+        for product in products ]
+     #Save products back to Products.csv file
+        with open('Products.csv', 'w', newline="") as file:
+            f = csv.DictWriter(file, fieldnames=headers)
+            f.writeheader()
+            f.writerows(products_conv)
+
+            cursor.close()
+    except Exception as e:
+        print(f"Error exporting products: {e}")
+        cursor.close()
