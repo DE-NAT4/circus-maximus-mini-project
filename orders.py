@@ -193,8 +193,9 @@ def print_orders():
 
                 orders = cur.fetchall()
                 if orders:
-                    for order in orders:
-                        print(order)
+                    print("ID    customer_name    customer_address    customer_phone    ID (courier)    ID (status)    ID (product)")
+                    for id, name, address, phone, courier_id, status_id, product_id in orders:
+                        print(f'{id}|    {name}   |   {address}   |   {phone}   |   {courier_id}   |   {status_id}   |   {product_id}')
                 else:
                     print(f'No orders')
 
