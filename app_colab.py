@@ -15,16 +15,6 @@ def print_main_menu():
     print("|\t\t\t|")
     print("------------------------")
 
-
-order_list = [{
-    "Customer Name": "John",
-    "Customer Address":"Bradford",
-    "Customer Phone":"071111111",
-    "Order Status": "Pending"
-    }]
-
-
-
 while True:
     print_main_menu()
     user_input = input("Enter option: ")
