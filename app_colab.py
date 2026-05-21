@@ -34,6 +34,7 @@ while True:
         if saveconf == "y":
             products.export_products_csv()
             couriers.export_courier_table_to_csv()
+            orders.export_orders_table_to_csv()
             print("Saving and Exiting app...")
             exit()
             break

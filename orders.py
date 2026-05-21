@@ -26,6 +26,45 @@ def print_order_menu():
     print('| \t\t\t\t|')
     print('--------------------------------')
 
+
+
+def export_orders_table_to_csv():
+
+    try:
+
+        # Open database connection
+        with get_connection() as conn:
+            # Create cursor object
+            with conn.cursor() as cur:
+
+                # Open CSV file in write mode
+                with open('orders.csv', 'w', newline='') as csvfile:
+                    # Define CSV column names
+                    fieldnames = [
+                        'order_id',
+                        'customer_name',
+                        'customer_address',
+                        'customer_phone',
+                        'courier_id',
+                        'status_id',
+                        'product_id'
+                        ]
+
+                    # Create CSV writer object
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                    # Write header row
+                    writer.writeheader()
+
+                    # Copy table contents directly into CSV file
+                    cur.copy_to(csvfile, 'orders', sep=",")
+
+    except Exception as e:
+        print(f'Error: {e}')
+
+
+
+
 # delete
 # def read_orders_csv():
 #     try:
