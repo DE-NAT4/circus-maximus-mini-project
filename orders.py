@@ -27,6 +27,134 @@ def print_order_menu():
 
 
 
+def export_orders_table_to_csv():
+
+    try:
+
+        # Open database connection
+        with get_connection() as conn:
+            # Create cursor object
+            with conn.cursor() as cur:
+
+                # Open CSV file in write mode
+                with open('orders.csv', 'w', newline='') as csvfile:
+                    # Define CSV column names
+                    fieldnames = [
+                        'order_id',
+                        'customer_name',
+                        'customer_address',
+                        'customer_phone',
+                        'courier_id',
+                        'status_id',
+                        'product_id'
+                        ]
+
+                    # Create CSV writer object
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+                    # Write header row
+                    writer.writeheader()
+
+                    # Copy table contents directly into CSV file
+                    cur.copy_to(csvfile, 'orders', sep=",")
+
+    except Exception as e:
+        print(f'Error: {e}')
+
+
+
+
+# delete
+# def read_orders_csv():
+#     try:
+#         with open('Orders.csv', 'r') as file:
+#             reader = csv.DictReader(file, skipinitialspace=True)
+#             if reader.fieldnames:
+#                 reader.fieldnames = [name.strip() for name in reader.fieldnames if name]
+#             return [row for row in reader if any((value or '').strip() for value in row.values())]
+#     except FileNotFoundError:
+#         return []
+#     except Exception as error:
+#         print(f'Error reading Orders.csv: {error}')
+#         return []
+
+# # delete
+# def normalize_order(order, couriers, products):
+#     # Normalize courier: if it's an index, convert to name
+#     try:
+#         courier_index = int(order.get('courier', ''))
+#         if 0 <= courier_index < len(couriers):
+#             order['courier'] = couriers[courier_index]['name']
+#     except (ValueError, TypeError):
+#         pass  # Keep as is if not index
+
+#     # Normalize items: if comma-separated indices, convert to names
+#     items_str = order.get('items', '')
+#     if items_str:
+#         try:
+#             indices = [int(x.strip()) for x in items_str.split(',') if x.strip()]
+#             names = []
+#             for idx in indices:
+#                 if 0 <= idx < len(products):
+#                     names.append(products[idx]['Name'])
+#             if names:
+#                 order['items'] = ', '.join(names)
+#         except (ValueError, TypeError):
+#             pass  # Keep as is
+
+#     return order
+
+# #delete
+# def parse_index_list(raw_input):
+#     try:
+#         return [int(x.strip()) for x in raw_input.split(',') if x.strip()]
+#     except ValueError:
+#         return []
+
+# change
+# def choose_courier():
+#     couriers = load_couriers()
+#     if not couriers:
+#         return "No couriers available, please add a courier first."
+
+#     print('Choose a courier:')
+#     for i, courier in enumerate(couriers):
+#         print(f'{i}: {courier.get("name", "Unnamed courier")} ({courier.get("phone", "")})')
+#     try:
+#         choice = int(input('Enter courier index: ').strip())
+#     except ValueError:
+#         return None
+#     if 0 <= choice < len(couriers):
+#         return couriers[choice]
+#     return None
+
+# # change
+# def parse_index_list(raw_input):
+#     try:
+#         return [int(x.strip()) for x in raw_input.split(',') if x.strip()]
+#     except Exception:
+#         return []
+
+
+
+# delete
+# def load_orders(couriers, products):
+#     return [normalize_order(order, couriers, products) for order in read_orders_csv()]
+
+# keep?
+def save_orders(order_list):
+    if not order_list:
+        return
+    try:
+        with open('Orders.csv', 'w', newline='', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=FIELDNAMES)
+            writer.writeheader()
+            for order in order_list:
+                writer.writerow({key: order.get(key, '') for key in FIELDNAMES})
+    except Exception as error:
+        print(f'Unable to save orders: {error}')
+
+
 def print_status():
     try:
         with get_connection() as conn:
@@ -55,8 +183,9 @@ def print_orders():
 
                 orders = cur.fetchall()
                 if orders:
-                    for order in orders:
-                        print(order)
+                    print("ID    customer_name    customer_address    customer_phone    ID (courier)    ID (status)    ID (product)")
+                    for id, name, address, phone, courier_id, status_id, product_id in orders:
+                        print(f'{id}|    {name}   |   {address}   |   {phone}   |   {courier_id}   |   {status_id}   |   {product_id}')
                 else:
                     print('No orders')
                 return orders
@@ -64,7 +193,6 @@ def print_orders():
         print(f'Error: {e}')
         return []
 
-# print_orders()
 
  # Updates the status of an order based off of ID
 
@@ -233,3 +361,163 @@ def insert_order(new_customer_name, new_customer_address, new_customer_phone, ne
     connection.commit()
 
     cursor.close()
+
+
+def update_order():
+
+    # SHOW EXISTING ORDERS
+    print_orders()
+
+    order_id = input(
+        "Enter order ID to update: "
+    )
+
+    try:
+
+        with get_connection() as conn:
+
+            with conn.cursor() as cur:
+
+                # =========================
+                # GET CURRENT ORDER
+                # =========================
+
+                sql = """
+                    SELECT
+                        customer_name,
+                        customer_address,
+                        customer_phone,
+                        courier_id,
+                        products_id
+                    FROM orders
+                    WHERE order_id = %s;
+                """
+
+                cur.execute(sql, (order_id,))
+
+                order = cur.fetchone()
+
+                # CHECK ORDER EXISTS
+                if not order:
+                    print("Order not found!")
+                    return
+
+                # =========================
+                # STORE CURRENT VALUES
+                # =========================
+
+                current_name = order[0]
+                current_address = order[1]
+                current_phone = order[2]
+                current_courier = order[3]
+                current_items = order[4]
+
+                # =========================
+                # USER INPUTS
+                # =========================
+
+                new_name = input(
+                    f"Customer name ({current_name}): "
+                )
+
+                new_address = input(
+                    f"Customer address ({current_address}): "
+                )
+
+                new_phone = input(
+                    f"Customer phone ({current_phone}): "
+                )
+
+                # =========================
+                # SHOW PRODUCTS
+                # =========================
+
+                print("\nAVAILABLE PRODUCTS\n")
+
+                cur.execute("""
+                    SELECT product_id, product_name, product_price
+                    FROM products
+                    ORDER BY product_id;
+                """)
+
+                products = cur.fetchall()
+
+                for product in products:
+                    print(product)
+
+                new_items = input(
+                    f"Product IDs ({current_items}): "
+                )
+
+                # =========================
+                # SHOW COURIERS
+                # =========================
+
+                print("\nAVAILABLE COURIERS\n")
+
+                cur.execute("""
+                    SELECT courier_id, courier_name, courier_phone
+                    FROM couriers
+                    ORDER BY courier_id;
+                """)
+
+                couriers = cur.fetchall()
+
+                for courier in couriers:
+                    print(courier)
+
+                new_courier = input(
+                    f"Courier ID ({current_courier}): "
+                )
+
+                # =========================
+                # KEEP OLD VALUES IF EMPTY
+                # =========================
+
+                if new_name == "":
+                    new_name = current_name
+
+                if new_address == "":
+                    new_address = current_address
+
+                if new_phone == "":
+                    new_phone = current_phone
+
+                if new_items == "":
+                    new_items = current_items
+
+                if new_courier == "":
+                    new_courier = current_courier
+
+                # =========================
+                # UPDATE DATABASE
+                # =========================
+
+                update_sql = """
+                    UPDATE orders
+                    SET customer_name = %s,
+                        customer_address = %s,
+                        customer_phone = %s,
+                        courier_id = %s,
+                        products_id = %s
+                    WHERE order_id = %s;
+                """
+
+                cur.execute(
+                    update_sql,
+                    (
+                        new_name,
+                        new_address,
+                        new_phone,
+                        new_courier,
+                        new_items,
+                        order_id
+                    )
+                )
+
+                conn.commit()
+
+                print("Order updated!")
+
+    except Exception as e:
+        print(f"Error: {e}")

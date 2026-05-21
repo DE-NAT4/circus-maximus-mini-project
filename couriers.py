@@ -12,74 +12,33 @@ def print_courier_menu():
     print("|\t\t\t|")
     print("------------------------")
 
-######################################
-# Legacy CSV functions - no longer used
-# Data is now stored in the SQL database
-def load_couriers():
-    """Load couriers from couriers.csv file"""
 
-    # Create empty list to store courier dictionaries
-    couriers = []
+# Export all courier records from the database into a CSV file
+def export_courier_table_to_csv():
 
     try:
-        # Open CSV file in read mode
-        with open('couriers.csv', 'r', newline='') as csvfile:
-            
-            # Read CSV rows as dictionaries
-            reader = csv.DictReader(csvfile)
 
-            # Loop through each row in the CSV file
-            for row in reader:
+        # Open database connection
+        with get_connection() as conn:
+            # Create cursor object
+            with conn.cursor() as cur:
 
-                # Create courier dictionary
-                courier = {
-                    'name': row['name'],
-                    'phone': row['phone']
-                }
+                # Open CSV file in write mode
+                with open('couriers.csv', 'w', newline='') as csvfile:
+                    # Define CSV column names
+                    fieldnames = ['courier_id', 'courier_name', 'courier_phone']
 
-                # Add courier to list
-                couriers.append(courier)
+                    # Create CSV writer object
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-    # Use default data if file does not exist            
-    except FileNotFoundError:
-        print("Courier not found. Using default couriers.")
-        couriers = [
-            {"name": "John",
-             "phone": "071111111111"},
-            {"name": "Mark",
-             "phone": "072222222222"} 
-        ]
+                    # Write header row
+                    writer.writeheader()
 
-    return couriers
-
-
-
-
-def save_couriers(couriers):
-    """Save couriers back to couriers.csv file"""
-
-    try:
-        # Open CSV file in write mode
-        with open('couriers.csv', 'w', newline='') as csvfile:
-
-            # Define CSV column names
-            fieldnames = ['name', 'phone']
-
-            # Create CSV writer object
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
-             # Write header row
-            writer.writeheader()
-
-            # Write each courier dictionary as a row
-            for courier in couriers:
-                writer.writerow({'name': courier['name'],
-                                 'phone': courier['phone']})
+                    # Copy table contents directly into CSV file
+                    cur.copy_to(csvfile, 'couriers', sep=",")
 
     except Exception as e:
-        print(f"Error saving couriers: {e}")
-
-#########################################
+        print(f'Error: {e}')
 
 
 
@@ -103,8 +62,9 @@ def print_courier_list():
 
                 # Print couriers if records exist
                 if couriers:
-                    for courier in couriers:
-                        print(courier)
+                    print('ID    Name   Phone')
+                    for id, name, phone in couriers:
+                        print(f"{id} |  {name}      {phone}")
                 else:
                     print(f'No Couriers')
 
@@ -319,3 +279,74 @@ def courier_menu():
         # Handle invalid menu option
         else: 
             print ("Invalid Input")
+
+
+
+######################################
+# Legacy CSV functions - no longer used
+# Data is now stored in the SQL database
+def load_couriers():
+    """Load couriers from couriers.csv file"""
+
+    # Create empty list to store courier dictionaries
+    couriers = []
+
+    try:
+        # Open CSV file in read mode
+        with open('couriers.csv', 'r', newline='') as csvfile:
+            
+            # Read CSV rows as dictionaries
+            reader = csv.DictReader(csvfile)
+
+            # Loop through each row in the CSV file
+            for row in reader:
+
+                # Create courier dictionary
+                courier = {
+                    'name': row['name'],
+                    'phone': row['phone']
+                }
+
+                # Add courier to list
+                couriers.append(courier)
+
+    # Use default data if file does not exist            
+    except FileNotFoundError:
+        print("Courier not found. Using default couriers.")
+        couriers = [
+            {"name": "John",
+             "phone": "071111111111"},
+            {"name": "Mark",
+             "phone": "072222222222"} 
+        ]
+
+    return couriers
+
+
+
+
+def save_couriers(couriers):
+    """Save couriers back to couriers.csv file"""
+
+    try:
+        # Open CSV file in write mode
+        with open('couriers.csv', 'w', newline='') as csvfile:
+
+            # Define CSV column names
+            fieldnames = ['name', 'phone']
+
+            # Create CSV writer object
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+             # Write header row
+            writer.writeheader()
+
+            # Write each courier dictionary as a row
+            for courier in couriers:
+                writer.writerow({'name': courier['name'],
+                                 'phone': courier['phone']})
+
+    except Exception as e:
+        print(f"Error saving couriers: {e}")
+
+#########################################
